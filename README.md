@@ -1,3 +1,4 @@
+
 # Innovatech Solutions — Plataforma de Gestión de Proyectos Tecnológicos
 
 > **DSY1106 Desarrollo Fullstack III** · Sección 303D  
@@ -16,6 +17,8 @@ La solución se construyó sobre una **arquitectura de microservicios** con un B
 ---
 
 ## Arquitectura general
+
+<img width="2000" height="2000" alt="diagrama_innovatech" src="https://github.com/user-attachments/assets/9527cd1c-e4f1-401e-a4af-ec1e3c7ee3ab" />
 
 ```
 USUARIO
