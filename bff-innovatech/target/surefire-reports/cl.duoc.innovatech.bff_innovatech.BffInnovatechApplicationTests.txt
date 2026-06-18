@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: cl.duoc.innovatech.bff_innovatech.BffInnovatechApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.574 s -- in cl.duoc.innovatech.bff_innovatech.BffInnovatechApplicationTests

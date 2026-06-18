@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DashboardBffServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.service.impl</a> &gt; <span class="el_source">DashboardBffServiceImpl.java</span></div><h1>DashboardBffServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.service.impl;
+
+import cl.duoc.innovatech.bff_innovatech.client.MsAnaliticaClient;
+import cl.duoc.innovatech.bff_innovatech.client.MsRecursosClient;
+import cl.duoc.innovatech.bff_innovatech.dto.response.DashboardResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.KpiMetricaResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.ResumenRecursosResponse;
+import cl.duoc.innovatech.bff_innovatech.service.DashboardBffService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Servicio BFF del Dashboard consolidado.
+ * Combina datos de ms-analitica y ms-recursos en un único DTO
+ * para reducir el número de llamadas HTTP desde el frontend.
+ * Esto es la esencia del patrón BFF: agregar datos de múltiples servicios.
+ */
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L23">@Slf4j</span>
+public class DashboardBffServiceImpl implements DashboardBffService {
+
+    private final MsAnaliticaClient msAnaliticaClient;
+    private final MsRecursosClient  msRecursosClient;
+
+    @Override
+    public DashboardResponse obtenerDashboardConsolidado() {
+<span class="fc" id="L31">        log.info(&quot;BFF: construyendo dashboard consolidado&quot;);</span>
+
+        // 1. Obtener datos base de analítica
+<span class="fc" id="L34">        DashboardResponse analitica = msAnaliticaClient.obtenerDashboard();</span>
+
+        // 2. Enriquecer con resumen de recursos humanos
+<span class="fc" id="L37">        ResumenRecursosResponse resumenRR = null;</span>
+        try {
+<span class="fc" id="L39">            resumenRR = msRecursosClient.obtenerResumen();</span>
+<span class="fc" id="L40">        } catch (Exception ex) {</span>
+<span class="fc" id="L41">            log.warn(&quot;ms-recursos no disponible, dashboard parcial: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L42">        }</span>
+
+        // 3. Construir respuesta consolidada para el frontend (BFF pattern)
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (analitica == null) {</span>
+<span class="fc" id="L46">            analitica = DashboardResponse.builder().build();</span>
+        }
+
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (resumenRR != null) {</span>
+<span class="fc" id="L50">            analitica.setTotalEmpleados(resumenRR.getTotalEmpleados());</span>
+<span class="fc" id="L51">            analitica.setEmpleadosDisponibles(resumenRR.getEmpleadosDisponibles());</span>
+<span class="fc" id="L52">            analitica.setEmpleadosOcupados(resumenRR.getEmpleadosOcupados());</span>
+<span class="fc" id="L53">            analitica.setAsignacionesActivas(resumenRR.getAsignacionesActivas());</span>
+        }
+
+<span class="fc" id="L56">        return analitica;</span>
+    }
+
+    @Override
+    public List&lt;KpiMetricaResponse&gt; listarKpis() {
+<span class="fc" id="L61">        log.info(&quot;BFF → ms-analitica: listar KPIs&quot;);</span>
+<span class="fc" id="L62">        return msAnaliticaClient.listarKpis();</span>
+    }
+
+    @Override
+    public List&lt;KpiMetricaResponse&gt; listarKpisPorCategoria(String categoria) {
+<span class="fc" id="L67">        log.info(&quot;BFF → ms-analitica: KPIs por categoría={}&quot;, categoria);</span>
+<span class="fc" id="L68">        return msAnaliticaClient.listarKpisPorCategoria(categoria);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

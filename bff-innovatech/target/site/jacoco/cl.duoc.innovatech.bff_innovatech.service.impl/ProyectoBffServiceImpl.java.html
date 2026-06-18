@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProyectoBffServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.service.impl</a> &gt; <span class="el_source">ProyectoBffServiceImpl.java</span></div><h1>ProyectoBffServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.service.impl;
+
+import cl.duoc.innovatech.bff_innovatech.client.MsProyectosClient;
+import cl.duoc.innovatech.bff_innovatech.dto.request.ProyectoRequest;
+import cl.duoc.innovatech.bff_innovatech.dto.response.ProyectoResponse;
+import cl.duoc.innovatech.bff_innovatech.service.ProyectoBffService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Implementación del servicio BFF para proyectos.
+ * Delega al cliente HTTP y aplica lógica de adaptación de respuestas
+ * según las necesidades del frontend (BFF pattern: reduce over-fetching).
+ */
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L20">@Slf4j</span>
+public class ProyectoBffServiceImpl implements ProyectoBffService {
+
+    private final MsProyectosClient msProyectosClient;
+
+    @Override
+    public List&lt;ProyectoResponse&gt; listar() {
+<span class="fc" id="L27">        log.info(&quot;BFF → ms-proyectos: listar todos&quot;);</span>
+<span class="fc" id="L28">        return msProyectosClient.listarProyectos();</span>
+    }
+
+    @Override
+    public List&lt;ProyectoResponse&gt; listarPorEstado(String estado) {
+<span class="fc" id="L33">        log.info(&quot;BFF → ms-proyectos: listar por estado={}&quot;, estado);</span>
+<span class="fc" id="L34">        return msProyectosClient.listarPorEstado(estado);</span>
+    }
+
+    @Override
+    public ProyectoResponse obtenerPorId(Long id) {
+<span class="fc" id="L39">        log.info(&quot;BFF → ms-proyectos: obtener id={}&quot;, id);</span>
+<span class="fc" id="L40">        return msProyectosClient.obtenerProyectoPorId(id);</span>
+    }
+
+    @Override
+    public ProyectoResponse crear(ProyectoRequest request) {
+<span class="fc" id="L45">        log.info(&quot;BFF → ms-proyectos: crear proyecto '{}'&quot;, request.getNombre());</span>
+<span class="fc" id="L46">        return msProyectosClient.crearProyecto(request);</span>
+    }
+
+    @Override
+    public ProyectoResponse actualizar(Long id, ProyectoRequest request) {
+<span class="fc" id="L51">        log.info(&quot;BFF → ms-proyectos: actualizar id={}&quot;, id);</span>
+<span class="fc" id="L52">        return msProyectosClient.actualizarProyecto(id, request);</span>
+    }
+
+    @Override
+    public void eliminar(Long id) {
+<span class="fc" id="L57">        log.info(&quot;BFF → ms-proyectos: eliminar id={}&quot;, id);</span>
+<span class="fc" id="L58">        msProyectosClient.eliminarProyecto(id);</span>
+<span class="fc" id="L59">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

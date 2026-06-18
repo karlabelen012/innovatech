@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MsRecursosClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.client</a> &gt; <span class="el_source">MsRecursosClient.java</span></div><h1>MsRecursosClient.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.client;
+
+import cl.duoc.innovatech.bff_innovatech.dto.request.AsignacionRequest;
+import cl.duoc.innovatech.bff_innovatech.dto.request.EmpleadoRequest;
+import cl.duoc.innovatech.bff_innovatech.dto.response.AsignacionResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.EmpleadoResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.ResumenRecursosResponse;
+import cl.duoc.innovatech.bff_innovatech.exception.MicroservicioNoDisponibleException;
+import cl.duoc.innovatech.bff_innovatech.exception.RecursoNoEncontradoException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
+/**
+ * Cliente HTTP del BFF hacia ms-recursos (puerto 8082).
+ */
+@Component
+@RequiredArgsConstructor
+<span class="fc" id="L27">@Slf4j</span>
+public class MsRecursosClient {
+
+    private final RestTemplate restTemplate;
+
+    @Value(&quot;${ms.recursos.url}&quot;)
+    private String baseUrl;
+
+    private static final String EMP  = &quot;/api/v1/empleados&quot;;
+    private static final String ASIG = &quot;/api/v1/asignaciones&quot;;
+
+    // ── EMPLEADOS ──────────────────────────────────────────────────────────────
+
+    public List&lt;EmpleadoResponse&gt; listarEmpleados() {
+        try {
+<span class="nc" id="L42">            ResponseEntity&lt;List&lt;EmpleadoResponse&gt;&gt; resp = restTemplate.exchange(</span>
+                    baseUrl + EMP, HttpMethod.GET, null,
+<span class="nc" id="L44">                    new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="nc" id="L45">            return resp.getBody();</span>
+<span class="nc" id="L46">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L47">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    public EmpleadoResponse obtenerEmpleadoPorId(Long id) {
+        try {
+<span class="nc" id="L53">            return restTemplate.getForObject(baseUrl + EMP + &quot;/&quot; + id, EmpleadoResponse.class);</span>
+<span class="nc" id="L54">        } catch (HttpClientErrorException.NotFound ex) {</span>
+<span class="nc" id="L55">            throw new RecursoNoEncontradoException(&quot;Empleado no encontrado: &quot; + id);</span>
+<span class="nc" id="L56">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L57">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    public EmpleadoResponse crearEmpleado(EmpleadoRequest request) {
+        try {
+<span class="nc" id="L63">            HttpEntity&lt;EmpleadoRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
+<span class="nc" id="L64">            ResponseEntity&lt;EmpleadoResponse&gt; resp = restTemplate.postForEntity(</span>
+                    baseUrl + EMP, entity, EmpleadoResponse.class);
+<span class="nc" id="L66">            return resp.getBody();</span>
+<span class="nc" id="L67">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L68">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    public EmpleadoResponse actualizarEmpleado(Long id, EmpleadoRequest request) {
+        try {
+<span class="nc" id="L74">            HttpEntity&lt;EmpleadoRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
+<span class="nc" id="L75">            ResponseEntity&lt;EmpleadoResponse&gt; resp = restTemplate.exchange(</span>
+                    baseUrl + EMP + &quot;/&quot; + id,
+                    HttpMethod.PUT, entity, EmpleadoResponse.class);
+<span class="nc" id="L78">            return resp.getBody();</span>
+<span class="nc" id="L79">        } catch (HttpClientErrorException.NotFound ex) {</span>
+<span class="nc" id="L80">            throw new RecursoNoEncontradoException(&quot;Empleado no encontrado: &quot; + id);</span>
+<span class="nc" id="L81">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L82">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    public EmpleadoResponse actualizarDisponibilidad(Long id, String disponibilidad) {
+        try {
+<span class="nc" id="L88">            ResponseEntity&lt;EmpleadoResponse&gt; resp = restTemplate.exchange(</span>
+                    baseUrl + EMP + &quot;/&quot; + id + &quot;?disponibilidad=&quot; + disponibilidad,
+                    HttpMethod.PATCH, null, EmpleadoResponse.class);
+<span class="nc" id="L91">            return resp.getBody();</span>
+<span class="nc" id="L92">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L93">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    public void eliminarEmpleado(Long id) {
+        try {
+<span class="nc" id="L99">            restTemplate.delete(baseUrl + EMP + &quot;/&quot; + id);</span>
+<span class="nc" id="L100">        } catch (HttpClientErrorException.NotFound ex) {</span>
+<span class="nc" id="L101">            throw new RecursoNoEncontradoException(&quot;Empleado no encontrado: &quot; + id);</span>
+<span class="nc" id="L102">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L103">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+<span class="nc" id="L104">        }</span>
+<span class="nc" id="L105">    }</span>
+
+    // ── ASIGNACIONES ───────────────────────────────────────────────────────────
+
+    public List&lt;AsignacionResponse&gt; listarAsignaciones() {
+        try {
+<span class="nc" id="L111">            ResponseEntity&lt;List&lt;AsignacionResponse&gt;&gt; resp = restTemplate.exchange(</span>
+                    baseUrl + ASIG, HttpMethod.GET, null,
+<span class="nc" id="L113">                    new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="nc" id="L114">            return resp.getBody();</span>
+<span class="nc" id="L115">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L116">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    public AsignacionResponse crearAsignacion(AsignacionRequest request) {
+        try {
+<span class="nc" id="L122">            HttpEntity&lt;AsignacionRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
+<span class="nc" id="L123">            ResponseEntity&lt;AsignacionResponse&gt; resp = restTemplate.postForEntity(</span>
+                    baseUrl + ASIG, entity, AsignacionResponse.class);
+<span class="nc" id="L125">            return resp.getBody();</span>
+<span class="nc" id="L126">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L127">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    public void desactivarAsignacion(Long id) {
+        try {
+<span class="nc" id="L133">            restTemplate.delete(baseUrl + ASIG + &quot;/&quot; + id);</span>
+<span class="nc" id="L134">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L135">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+<span class="nc" id="L136">        }</span>
+<span class="nc" id="L137">    }</span>
+
+    public ResumenRecursosResponse obtenerResumen() {
+        try {
+<span class="nc" id="L141">            return restTemplate.getForObject(baseUrl + ASIG + &quot;/resumen&quot;, ResumenRecursosResponse.class);</span>
+<span class="nc" id="L142">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L143">            throw new MicroservicioNoDisponibleException(&quot;ms-recursos&quot;, ex);</span>
+        }
+    }
+
+    private HttpHeaders jsonHeaders() {
+<span class="nc" id="L148">        HttpHeaders h = new HttpHeaders();</span>
+<span class="nc" id="L149">        h.setContentType(MediaType.APPLICATION_JSON);</span>
+<span class="nc" id="L150">        return h;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

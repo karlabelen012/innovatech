@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MsAnaliticaClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.client</a> &gt; <span class="el_source">MsAnaliticaClient.java</span></div><h1>MsAnaliticaClient.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.client;
+
+import cl.duoc.innovatech.bff_innovatech.dto.response.DashboardResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.KpiMetricaResponse;
+import cl.duoc.innovatech.bff_innovatech.exception.MicroservicioNoDisponibleException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
+/**
+ * Cliente HTTP del BFF hacia ms-analitica (puerto 8083).
+ */
+@Component
+@RequiredArgsConstructor
+<span class="fc" id="L23">@Slf4j</span>
+public class MsAnaliticaClient {
+
+    private final RestTemplate restTemplate;
+
+    @Value(&quot;${ms.analitica.url}&quot;)
+    private String baseUrl;
+
+    private static final String DASH = &quot;/api/v1/dashboard&quot;;
+    private static final String KPI  = &quot;/api/v1/kpis&quot;;
+
+    public DashboardResponse obtenerDashboard() {
+        try {
+<span class="nc" id="L36">            log.debug(&quot;GET {}{}&quot;, baseUrl, DASH);</span>
+<span class="nc" id="L37">            return restTemplate.getForObject(baseUrl + DASH, DashboardResponse.class);</span>
+<span class="nc" id="L38">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L39">            throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+        }
+    }
+
+    public List&lt;KpiMetricaResponse&gt; listarKpis() {
+        try {
+<span class="nc" id="L45">            ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
+                    baseUrl + KPI, HttpMethod.GET, null,
+<span class="nc" id="L47">                    new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="nc" id="L48">            return resp.getBody();</span>
+<span class="nc" id="L49">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L50">            throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+        }
+    }
+
+    public List&lt;KpiMetricaResponse&gt; listarKpisPorCategoria(String categoria) {
+        try {
+<span class="nc" id="L56">            ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
+                    baseUrl + KPI + &quot;?categoria=&quot; + categoria,
+                    HttpMethod.GET, null,
+<span class="nc" id="L59">                    new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="nc" id="L60">            return resp.getBody();</span>
+<span class="nc" id="L61">        } catch (ResourceAccessException ex) {</span>
+<span class="nc" id="L62">            throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
