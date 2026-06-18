@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DashboardServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-analitica</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.ms_analitica.service.impl</a> &gt; <span class="el_source">DashboardServiceImpl.java</span></div><h1>DashboardServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.ms_analitica.service.impl;
+
+import cl.duoc.innovatech.ms_analitica.dto.DashboardDTO;
+import cl.duoc.innovatech.ms_analitica.dto.KpiMetricaDTO;
+import cl.duoc.innovatech.ms_analitica.dto.ReporteProyectoDTO;
+import cl.duoc.innovatech.ms_analitica.model.enums.EstadoProyecto;
+import cl.duoc.innovatech.ms_analitica.repository.KpiMetricaRepository;
+import cl.duoc.innovatech.ms_analitica.repository.ReporteProyectoRepository;
+import cl.duoc.innovatech.ms_analitica.service.DashboardService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class DashboardServiceImpl implements DashboardService {
+
+    private final ReporteProyectoRepository reporteRepository;
+    private final KpiMetricaRepository kpiRepository;
+
+    @Override
+    public DashboardDTO obtenerDashboard() {
+<span class="nc" id="L27">        long total = reporteRepository.count();</span>
+<span class="nc" id="L28">        long activos = reporteRepository.countByEstado(EstadoProyecto.EN_PROGRESO);</span>
+<span class="nc" id="L29">        long finalizados = reporteRepository.countByEstado(EstadoProyecto.FINALIZADO);</span>
+<span class="nc" id="L30">        long pendientes = reporteRepository.countByEstado(EstadoProyecto.PENDIENTE);</span>
+<span class="nc" id="L31">        Double promedio = reporteRepository.calcularPromedioAvanceActivos();</span>
+<span class="nc" id="L32">        long totalKpis = kpiRepository.count();</span>
+
+<span class="nc" id="L34">        Map&lt;String, Long&gt; porEstado = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (EstadoProyecto estado : EstadoProyecto.values()) {</span>
+<span class="nc" id="L36">            porEstado.put(estado.name(), reporteRepository.countByEstado(estado));</span>
+        }
+
+<span class="nc" id="L39">        List&lt;Object[]&gt; promediosRaw = kpiRepository.promedioValorPorCategoria();</span>
+<span class="nc" id="L40">        Map&lt;String, Double&gt; kpisPorCategoria = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        for (Object[] fila : promediosRaw) {</span>
+<span class="nc" id="L42">            kpisPorCategoria.put(fila[0].toString(), (Double) fila[1]);</span>
+<span class="nc" id="L43">        }</span>
+
+<span class="nc" id="L45">        List&lt;ReporteProyectoDTO&gt; recientes = reporteRepository.findTop5ByOrderByFechaRegistroDesc()</span>
+<span class="nc" id="L46">                .stream().map(r -&gt; ReporteProyectoDTO.builder()</span>
+<span class="nc" id="L47">                        .id(r.getId())</span>
+<span class="nc" id="L48">                        .nombreProyecto(r.getNombreProyecto())</span>
+<span class="nc" id="L49">                        .estado(r.getEstado())</span>
+<span class="nc" id="L50">                        .porcentajeAvance(r.getPorcentajeAvance())</span>
+<span class="nc" id="L51">                        .proyectoIdExterno(r.getProyectoIdExterno())</span>
+<span class="nc" id="L52">                        .build()).collect(Collectors.toList());</span>
+
+<span class="nc" id="L54">        List&lt;KpiMetricaDTO&gt; kpisDestacados = kpiRepository.findTop5ByOrderByFechaCalculoDesc()</span>
+<span class="nc" id="L55">                .stream().map(k -&gt; KpiMetricaDTO.builder()</span>
+<span class="nc" id="L56">                        .id(k.getId())</span>
+<span class="nc" id="L57">                        .nombreKpi(k.getNombreKpi())</span>
+<span class="nc" id="L58">                        .categoria(k.getCategoria())</span>
+<span class="nc" id="L59">                        .valor(k.getValor())</span>
+<span class="nc" id="L60">                        .unidad(k.getUnidad())</span>
+<span class="nc" id="L61">                        .build()).collect(Collectors.toList());</span>
+
+<span class="nc" id="L63">        return DashboardDTO.builder()</span>
+<span class="nc" id="L64">                .totalProyectos(total)</span>
+<span class="nc" id="L65">                .proyectosActivos(activos)</span>
+<span class="nc" id="L66">                .proyectosFinalizados(finalizados)</span>
+<span class="nc" id="L67">                .proyectosPendientes(pendientes)</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                .promedioAvance(promedio != null ? promedio : 0.0)</span>
+<span class="nc" id="L69">                .totalKpis(totalKpis)</span>
+<span class="nc" id="L70">                .proyectosPorEstado(porEstado)</span>
+<span class="nc" id="L71">                .kpisPorCategoria(kpisPorCategoria)</span>
+<span class="nc" id="L72">                .proyectosRecientes(recientes)</span>
+<span class="nc" id="L73">                .kpisDestacados(kpisDestacados)</span>
+<span class="nc" id="L74">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KpiMetricaServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-analitica</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.ms_analitica.service.impl</a> &gt; <span class="el_source">KpiMetricaServiceImpl.java</span></div><h1>KpiMetricaServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.ms_analitica.service.impl;
+
+import cl.duoc.innovatech.ms_analitica.dto.KpiMetricaDTO;
+import cl.duoc.innovatech.ms_analitica.exception.RecursoNoEncontradoException;
+import cl.duoc.innovatech.ms_analitica.model.KpiMetrica;
+import cl.duoc.innovatech.ms_analitica.model.enums.CategoriaKpi;
+import cl.duoc.innovatech.ms_analitica.repository.KpiMetricaRepository;
+import cl.duoc.innovatech.ms_analitica.service.KpiMetricaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class KpiMetricaServiceImpl implements KpiMetricaService {
+
+    private final KpiMetricaRepository kpiRepository;
+
+    @Override
+    public List&lt;KpiMetricaDTO&gt; listarTodos() {
+<span class="fc" id="L25">        return kpiRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public KpiMetricaDTO obtenerPorId(Long id) {
+<span class="fc" id="L30">        return toDTO(kpiRepository.findById(id)</span>
+<span class="fc" id="L31">                .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;KPI no encontrado con id: &quot; + id)));</span>
+    }
+
+    @Override
+    public KpiMetricaDTO crear(KpiMetricaDTO dto) {
+<span class="fc" id="L36">        return toDTO(kpiRepository.save(toEntity(dto)));</span>
+    }
+
+    @Override
+    public KpiMetricaDTO actualizar(Long id, KpiMetricaDTO dto) {
+<span class="fc" id="L41">        KpiMetrica existente = kpiRepository.findById(id)</span>
+<span class="fc" id="L42">                .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;KPI no encontrado con id: &quot; + id));</span>
+<span class="fc" id="L43">        existente.setNombreKpi(dto.getNombreKpi());</span>
+<span class="fc" id="L44">        existente.setCategoria(dto.getCategoria());</span>
+<span class="fc" id="L45">        existente.setValor(dto.getValor());</span>
+<span class="fc" id="L46">        existente.setUnidad(dto.getUnidad());</span>
+<span class="fc" id="L47">        existente.setDescripcion(dto.getDescripcion());</span>
+<span class="fc" id="L48">        return toDTO(kpiRepository.save(existente));</span>
+    }
+
+    @Override
+    public void eliminar(Long id) {
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (!kpiRepository.existsById(id)) {</span>
+<span class="fc" id="L54">            throw new RecursoNoEncontradoException(&quot;KPI no encontrado con id: &quot; + id);</span>
+        }
+<span class="fc" id="L56">        kpiRepository.deleteById(id);</span>
+<span class="fc" id="L57">    }</span>
+
+    @Override
+    public List&lt;KpiMetricaDTO&gt; listarPorCategoria(CategoriaKpi categoria) {
+<span class="fc" id="L61">        return kpiRepository.findByCategoria(categoria).stream().map(this::toDTO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public Map&lt;String, Double&gt; obtenerPromediosPorCategoria() {
+<span class="fc" id="L66">        List&lt;Object[]&gt; resultados = kpiRepository.promedioValorPorCategoria();</span>
+<span class="fc" id="L67">        Map&lt;String, Double&gt; mapa = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Object[] fila : resultados) {</span>
+<span class="fc" id="L69">            mapa.put(fila[0].toString(), (Double) fila[1]);</span>
+<span class="fc" id="L70">        }</span>
+<span class="fc" id="L71">        return mapa;</span>
+    }
+
+    private KpiMetricaDTO toDTO(KpiMetrica e) {
+<span class="fc" id="L75">        return KpiMetricaDTO.builder()</span>
+<span class="fc" id="L76">                .id(e.getId())</span>
+<span class="fc" id="L77">                .nombreKpi(e.getNombreKpi())</span>
+<span class="fc" id="L78">                .categoria(e.getCategoria())</span>
+<span class="fc" id="L79">                .valor(e.getValor())</span>
+<span class="fc" id="L80">                .unidad(e.getUnidad())</span>
+<span class="fc" id="L81">                .descripcion(e.getDescripcion())</span>
+<span class="fc" id="L82">                .build();</span>
+    }
+
+    private KpiMetrica toEntity(KpiMetricaDTO dto) {
+<span class="fc" id="L86">        return KpiMetrica.builder()</span>
+<span class="fc" id="L87">                .nombreKpi(dto.getNombreKpi())</span>
+<span class="fc" id="L88">                .categoria(dto.getCategoria())</span>
+<span class="fc" id="L89">                .valor(dto.getValor())</span>
+<span class="fc" id="L90">                .unidad(dto.getUnidad())</span>
+<span class="fc" id="L91">                .descripcion(dto.getDescripcion())</span>
+<span class="fc" id="L92">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

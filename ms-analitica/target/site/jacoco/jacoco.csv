@@ -1,0 +1,13 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+ms-analitica,cl.duoc.innovatech.ms_analitica.controller,DashboardController,5,0,0,0,1,0,1,0,1,0
+ms-analitica,cl.duoc.innovatech.ms_analitica.controller,KpiMetricaController,0,44,0,0,0,8,0,7,0,7
+ms-analitica,cl.duoc.innovatech.ms_analitica.controller,ReporteProyectoController,6,44,0,0,1,8,1,7,1,7
+ms-analitica,cl.duoc.innovatech.ms_analitica,MsAnaliticaApplication,5,3,0,0,2,1,1,1,1,1
+ms-analitica,cl.duoc.innovatech.ms_analitica.exception,GlobalExceptionHandler,82,36,0,0,14,7,3,2,3,2
+ms-analitica,cl.duoc.innovatech.ms_analitica.exception,RecursoNoEncontradoException,0,4,0,0,0,2,0,1,0,1
+ms-analitica,cl.duoc.innovatech.ms_analitica.model.enums,EstadoProyecto,0,27,0,0,0,5,0,1,0,1
+ms-analitica,cl.duoc.innovatech.ms_analitica.model.enums,CategoriaKpi,0,27,0,0,0,5,0,1,0,1
+ms-analitica,cl.duoc.innovatech.ms_analitica.service.impl,DashboardServiceImpl,179,0,6,0,42,0,6,0,3,0
+ms-analitica,cl.duoc.innovatech.ms_analitica.service.impl,ReporteProyectoServiceImpl,0,225,0,4,0,53,0,15,0,13
+ms-analitica,cl.duoc.innovatech.ms_analitica.service.impl,KpiMetricaServiceImpl,0,180,0,4,0,38,0,13,0,11
+ms-analitica,cl.duoc.innovatech.ms_analitica.config,SwaggerConfig,0,17,0,0,0,6,0,2,0,2
