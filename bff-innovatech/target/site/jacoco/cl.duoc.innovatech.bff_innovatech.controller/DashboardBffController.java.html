@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DashboardBffController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.controller</a> &gt; <span class="el_source">DashboardBffController.java</span></div><h1>DashboardBffController.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.controller;
+
+import cl.duoc.innovatech.bff_innovatech.dto.response.DashboardResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.KpiMetricaResponse;
+import cl.duoc.innovatech.bff_innovatech.service.DashboardBffService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * Controlador BFF del Dashboard.
+ * Este endpoint es el más representativo del patrón BFF:
+ * consolida datos de ms-analitica y ms-recursos en una sola respuesta
+ * para que el frontend no deba hacer múltiples llamadas.
+ */
+@RestController
+@RequestMapping(&quot;/api/bff/dashboard&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;BFF – Dashboard&quot;, description = &quot;Panel consolidado: agrega datos de ms-analitica y ms-recursos&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+public class DashboardBffController {
+
+    private final DashboardBffService dashboardBffService;
+
+    @GetMapping
+    @Operation(summary = &quot;Dashboard consolidado&quot;,
+               description = &quot;Combina KPIs de ms-analitica con resumen de recursos de ms-recursos en una sola respuesta optimizada para el frontend.&quot;)
+    public ResponseEntity&lt;DashboardResponse&gt; dashboard() {
+<span class="fc" id="L33">        return ResponseEntity.ok(dashboardBffService.obtenerDashboardConsolidado());</span>
+    }
+
+    @GetMapping(&quot;/kpis&quot;)
+    @Operation(summary = &quot;Listar todos los KPIs&quot;)
+    public ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; kpis() {
+<span class="fc" id="L39">        return ResponseEntity.ok(dashboardBffService.listarKpis());</span>
+    }
+
+    @GetMapping(&quot;/kpis/categoria&quot;)
+    @Operation(summary = &quot;KPIs por categoría&quot;,
+               description = &quot;Parámetro: ?categoria=PROYECTOS | RECURSOS | PRODUCTIVIDAD | FINANCIERO&quot;)
+    public ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; kpisPorCategoria(@RequestParam String categoria) {
+<span class="fc" id="L46">        return ResponseEntity.ok(dashboardBffService.listarKpisPorCategoria(categoria));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

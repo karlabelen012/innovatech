@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RecursosBffServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.service.impl</a> &gt; <span class="el_source">RecursosBffServiceImpl.java</span></div><h1>RecursosBffServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.service.impl;
+
+import cl.duoc.innovatech.bff_innovatech.client.MsRecursosClient;
+import cl.duoc.innovatech.bff_innovatech.dto.request.AsignacionRequest;
+import cl.duoc.innovatech.bff_innovatech.dto.request.EmpleadoRequest;
+import cl.duoc.innovatech.bff_innovatech.dto.response.AsignacionResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.EmpleadoResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.ResumenRecursosResponse;
+import cl.duoc.innovatech.bff_innovatech.service.RecursosBffService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L18">@Slf4j</span>
+public class RecursosBffServiceImpl implements RecursosBffService {
+
+    private final MsRecursosClient msRecursosClient;
+
+    @Override
+    public List&lt;EmpleadoResponse&gt; listarEmpleados() {
+<span class="fc" id="L25">        log.info(&quot;BFF → ms-recursos: listar empleados&quot;);</span>
+<span class="fc" id="L26">        return msRecursosClient.listarEmpleados();</span>
+    }
+
+    @Override
+    public EmpleadoResponse obtenerEmpleadoPorId(Long id) {
+<span class="fc" id="L31">        log.info(&quot;BFF → ms-recursos: obtener empleado id={}&quot;, id);</span>
+<span class="fc" id="L32">        return msRecursosClient.obtenerEmpleadoPorId(id);</span>
+    }
+
+    @Override
+    public EmpleadoResponse crearEmpleado(EmpleadoRequest request) {
+<span class="fc" id="L37">        log.info(&quot;BFF → ms-recursos: crear empleado '{}'&quot;, request.getEmail());</span>
+<span class="fc" id="L38">        return msRecursosClient.crearEmpleado(request);</span>
+    }
+
+    @Override
+    public EmpleadoResponse actualizarEmpleado(Long id, EmpleadoRequest request) {
+<span class="fc" id="L43">        log.info(&quot;BFF → ms-recursos: actualizar empleado id={}&quot;, id);</span>
+<span class="fc" id="L44">        return msRecursosClient.actualizarEmpleado(id, request);</span>
+    }
+
+    @Override
+    public EmpleadoResponse actualizarDisponibilidad(Long id, String disponibilidad) {
+<span class="fc" id="L49">        log.info(&quot;BFF → ms-recursos: disponibilidad empleado id={} =&gt; {}&quot;, id, disponibilidad);</span>
+<span class="fc" id="L50">        return msRecursosClient.actualizarDisponibilidad(id, disponibilidad);</span>
+    }
+
+    @Override
+    public void eliminarEmpleado(Long id) {
+<span class="fc" id="L55">        log.info(&quot;BFF → ms-recursos: eliminar empleado id={}&quot;, id);</span>
+<span class="fc" id="L56">        msRecursosClient.eliminarEmpleado(id);</span>
+<span class="fc" id="L57">    }</span>
+
+    @Override
+    public List&lt;AsignacionResponse&gt; listarAsignaciones() {
+<span class="fc" id="L61">        log.info(&quot;BFF → ms-recursos: listar asignaciones&quot;);</span>
+<span class="fc" id="L62">        return msRecursosClient.listarAsignaciones();</span>
+    }
+
+    @Override
+    public AsignacionResponse crearAsignacion(AsignacionRequest request) {
+<span class="fc" id="L67">        log.info(&quot;BFF → ms-recursos: crear asignación empleado={} proyecto={}&quot;, </span>
+<span class="fc" id="L68">                request.getEmpleadoId(), request.getProyectoId());</span>
+<span class="fc" id="L69">        return msRecursosClient.crearAsignacion(request);</span>
+    }
+
+    @Override
+    public void desactivarAsignacion(Long id) {
+<span class="fc" id="L74">        log.info(&quot;BFF → ms-recursos: desactivar asignación id={}&quot;, id);</span>
+<span class="fc" id="L75">        msRecursosClient.desactivarAsignacion(id);</span>
+<span class="fc" id="L76">    }</span>
+
+    @Override
+    public ResumenRecursosResponse obtenerResumen() {
+<span class="fc" id="L80">        log.info(&quot;BFF → ms-recursos: resumen de recursos&quot;);</span>
+<span class="fc" id="L81">        return msRecursosClient.obtenerResumen();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
