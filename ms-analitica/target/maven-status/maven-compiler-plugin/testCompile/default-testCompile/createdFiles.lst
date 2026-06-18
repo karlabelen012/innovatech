@@ -1,0 +1,6 @@
+cl\duoc\innovatech\ms_analitica\service\ReporteProyectoServiceTest.class
+cl\duoc\innovatech\ms_analitica\controller\KpiMetricaControllerTest.class
+cl\duoc\innovatech\ms_analitica\repository\ReporteProyectoRepositoryTest.class
+cl\duoc\innovatech\ms_analitica\service\KpiMetricaServiceTest.class
+cl\duoc\innovatech\ms_analitica\MsAnaliticaApplicationTests.class
+cl\duoc\innovatech\ms_analitica\controller\ReporteProyectoControllerTest.class

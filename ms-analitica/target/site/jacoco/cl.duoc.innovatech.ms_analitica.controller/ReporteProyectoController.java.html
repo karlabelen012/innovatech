@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReporteProyectoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-analitica</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.ms_analitica.controller</a> &gt; <span class="el_source">ReporteProyectoController.java</span></div><h1>ReporteProyectoController.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.ms_analitica.controller;
+
+import cl.duoc.innovatech.ms_analitica.dto.ReporteProyectoDTO;
+import cl.duoc.innovatech.ms_analitica.model.enums.EstadoProyecto;
+import cl.duoc.innovatech.ms_analitica.service.ReporteProyectoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/v1/reportes&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;Reportes de Proyecto&quot;, description = &quot;Endpoints para gestión de reportes de proyectos&quot;)
+public class ReporteProyectoController {
+
+    private final ReporteProyectoService reporteService;
+
+    @GetMapping
+    @Operation(summary = &quot;Listar todos los reportes de proyecto&quot;)
+    public ResponseEntity&lt;List&lt;ReporteProyectoDTO&gt;&gt; listarTodos() {
+<span class="fc" id="L27">        return ResponseEntity.ok(reporteService.listarTodos());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Obtener reporte por ID&quot;)
+    public ResponseEntity&lt;ReporteProyectoDTO&gt; obtenerPorId(@PathVariable Long id) {
+<span class="fc" id="L33">        return ResponseEntity.ok(reporteService.obtenerPorId(id));</span>
+    }
+
+    @GetMapping(&quot;/externo/{proyectoIdExterno}&quot;)
+    @Operation(summary = &quot;Obtener reporte por ID externo del proyecto&quot;)
+    public ResponseEntity&lt;ReporteProyectoDTO&gt; obtenerPorProyectoExterno(@PathVariable Long proyectoIdExterno) {
+<span class="nc" id="L39">        return ResponseEntity.ok(reporteService.obtenerPorProyectoExterno(proyectoIdExterno));</span>
+    }
+
+    @GetMapping(&quot;/estado/{estado}&quot;)
+    @Operation(summary = &quot;Listar reportes por estado&quot;)
+    public ResponseEntity&lt;List&lt;ReporteProyectoDTO&gt;&gt; listarPorEstado(@PathVariable EstadoProyecto estado) {
+<span class="fc" id="L45">        return ResponseEntity.ok(reporteService.listarPorEstado(estado));</span>
+    }
+
+    @GetMapping(&quot;/promedio-avance&quot;)
+    @Operation(summary = &quot;Calcular promedio de avance de proyectos activos&quot;)
+    public ResponseEntity&lt;Double&gt; calcularPromedioAvance() {
+<span class="fc" id="L51">        return ResponseEntity.ok(reporteService.calcularPromedioAvance());</span>
+    }
+
+    @PostMapping
+    @Operation(summary = &quot;Crear nuevo reporte de proyecto&quot;)
+    public ResponseEntity&lt;ReporteProyectoDTO&gt; crear(@Valid @RequestBody ReporteProyectoDTO dto) {
+<span class="fc" id="L57">        return ResponseEntity.status(HttpStatus.CREATED).body(reporteService.crear(dto));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Actualizar reporte de proyecto&quot;)
+    public ResponseEntity&lt;ReporteProyectoDTO&gt; actualizar(@PathVariable Long id, @Valid @RequestBody ReporteProyectoDTO dto) {
+<span class="fc" id="L63">        return ResponseEntity.ok(reporteService.actualizar(id, dto));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Eliminar reporte de proyecto&quot;)
+    public ResponseEntity&lt;Void&gt; eliminar(@PathVariable Long id) {
+<span class="fc" id="L69">        reporteService.eliminar(id);</span>
+<span class="fc" id="L70">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

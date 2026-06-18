@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KpiMetricaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-analitica</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.ms_analitica.controller</a> &gt; <span class="el_source">KpiMetricaController.java</span></div><h1>KpiMetricaController.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.ms_analitica.controller;
+
+import cl.duoc.innovatech.ms_analitica.dto.KpiMetricaDTO;
+import cl.duoc.innovatech.ms_analitica.model.enums.CategoriaKpi;
+import cl.duoc.innovatech.ms_analitica.service.KpiMetricaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping(&quot;/api/v1/kpis&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;KPI Métricas&quot;, description = &quot;Endpoints para gestión de KPIs e indicadores&quot;)
+public class KpiMetricaController {
+
+    private final KpiMetricaService kpiService;
+
+    @GetMapping
+    @Operation(summary = &quot;Listar todos los KPIs&quot;)
+    public ResponseEntity&lt;List&lt;KpiMetricaDTO&gt;&gt; listarTodos() {
+<span class="fc" id="L28">        return ResponseEntity.ok(kpiService.listarTodos());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Obtener KPI por ID&quot;)
+    public ResponseEntity&lt;KpiMetricaDTO&gt; obtenerPorId(@PathVariable Long id) {
+<span class="fc" id="L34">        return ResponseEntity.ok(kpiService.obtenerPorId(id));</span>
+    }
+
+    @GetMapping(&quot;/categoria/{categoria}&quot;)
+    @Operation(summary = &quot;Listar KPIs por categoría&quot;)
+    public ResponseEntity&lt;List&lt;KpiMetricaDTO&gt;&gt; listarPorCategoria(@PathVariable CategoriaKpi categoria) {
+<span class="fc" id="L40">        return ResponseEntity.ok(kpiService.listarPorCategoria(categoria));</span>
+    }
+
+    @GetMapping(&quot;/promedios&quot;)
+    @Operation(summary = &quot;Obtener promedios de KPIs por categoría&quot;)
+    public ResponseEntity&lt;Map&lt;String, Double&gt;&gt; obtenerPromedios() {
+<span class="fc" id="L46">        return ResponseEntity.ok(kpiService.obtenerPromediosPorCategoria());</span>
+    }
+
+    @PostMapping
+    @Operation(summary = &quot;Crear nuevo KPI&quot;)
+    public ResponseEntity&lt;KpiMetricaDTO&gt; crear(@Valid @RequestBody KpiMetricaDTO dto) {
+<span class="fc" id="L52">        return ResponseEntity.status(HttpStatus.CREATED).body(kpiService.crear(dto));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Actualizar KPI existente&quot;)
+    public ResponseEntity&lt;KpiMetricaDTO&gt; actualizar(@PathVariable Long id, @Valid @RequestBody KpiMetricaDTO dto) {
+<span class="fc" id="L58">        return ResponseEntity.ok(kpiService.actualizar(id, dto));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Eliminar KPI&quot;)
+    public ResponseEntity&lt;Void&gt; eliminar(@PathVariable Long id) {
+<span class="fc" id="L64">        kpiService.eliminar(id);</span>
+<span class="fc" id="L65">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
