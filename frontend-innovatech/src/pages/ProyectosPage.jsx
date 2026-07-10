@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { getProyectos, createProyecto, updateProyecto, deleteProyecto } from '../services/api.js'
+import {
+  getProyectos, createProyecto, updateProyecto, deleteProyecto,
+  getTareasPorProyecto, createTarea, updateTarea, deleteTarea,
+} from '../services/api.js'
 import { Btn, Badge, Card, Modal, Input, Textarea, Select, ProgressBar, Spinner, EmptyState } from '../atoms/index.jsx'
 import { useNotif } from '../context/NotifContext.jsx'
 
@@ -11,6 +14,7 @@ const ESTADOS = [
 ]
 
 const EMPTY_FORM = { nombre:'', descripcion:'', estado:'PENDIENTE', avance:0, responsable:'' }
+const EMPTY_TAREA = { titulo:'', descripcion:'', estado:'PENDIENTE', responsable:'' }
 
 export default function ProyectosPage() {
   const { refreshTick } = useOutletContext()
@@ -22,6 +26,15 @@ export default function ProyectosPage() {
   const [selected, setSelected] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
+
+  // ── Tareas ──────────────────────────────────────────────
+  const [tareasProyecto, setTareasProyecto] = useState(null) // proyecto seleccionado para ver tareas
+  const [tareas, setTareas] = useState([])
+  const [tareasLoading, setTareasLoading] = useState(false)
+  const [tareaModal, setTareaModal] = useState(null) // null | 'create' | 'edit' | 'delete'
+  const [tareaSeleccionada, setTareaSeleccionada] = useState(null)
+  const [tareaForm, setTareaForm] = useState(EMPTY_TAREA)
+  const [tareaSaving, setTareaSaving] = useState(false)
 
   const load = async () => {
     setLoading(true)
@@ -68,6 +81,55 @@ export default function ProyectosPage() {
       closeModal(); load()
     } catch { push('Error al eliminar', 'error') }
     finally { setSaving(false) }
+  }
+
+  // ── Tareas: handlers ──────────────────────────────────────
+  const loadTareas = async (proyectoId) => {
+    setTareasLoading(true)
+    try {
+      const data = await getTareasPorProyecto(proyectoId)
+      setTareas(data)
+    } catch {
+      push('No se pudieron cargar las tareas del proyecto', 'error')
+      setTareas([])
+    } finally { setTareasLoading(false) }
+  }
+
+  const openTareas = (p) => { setTareasProyecto(p); loadTareas(p.id) }
+  const closeTareas = () => { setTareasProyecto(null); setTareas([]); setTareaModal(null); setTareaSeleccionada(null) }
+
+  const openTareaCreate = () => { setTareaForm(EMPTY_TAREA); setTareaSeleccionada(null); setTareaModal('create') }
+  const openTareaEdit = (t) => { setTareaForm({ titulo:t.titulo||'', descripcion:t.descripcion||'', estado:t.estado||'PENDIENTE', responsable:t.responsable||'' }); setTareaSeleccionada(t); setTareaModal('edit') }
+  const openTareaDelete = (t) => { setTareaSeleccionada(t); setTareaModal('delete') }
+  const closeTareaModal = () => { setTareaModal(null); setTareaSeleccionada(null) }
+
+  const handleTareaChange = e => setTareaForm(f => ({ ...f, [e.target.name]: e.target.value }))
+
+  const handleTareaSave = async () => {
+    if (!tareaForm.titulo.trim()) { push('El título es obligatorio', 'warning'); return }
+    setTareaSaving(true)
+    try {
+      if (tareaModal === 'create') {
+        await createTarea({ ...tareaForm, proyectoId: tareasProyecto.id })
+        push('Tarea creada correctamente', 'success')
+      } else {
+        await updateTarea(tareaSeleccionada.id, { ...tareaForm, proyectoId: tareasProyecto.id })
+        push('Tarea actualizada', 'success')
+      }
+      closeTareaModal(); loadTareas(tareasProyecto.id)
+    } catch (e) {
+      push(e?.response?.data?.message || 'Error al guardar la tarea', 'error')
+    } finally { setTareaSaving(false) }
+  }
+
+  const handleTareaDelete = async () => {
+    setTareaSaving(true)
+    try {
+      await deleteTarea(tareaSeleccionada.id)
+      push('Tarea eliminada', 'success')
+      closeTareaModal(); loadTareas(tareasProyecto.id)
+    } catch { push('Error al eliminar la tarea', 'error') }
+    finally { setTareaSaving(false) }
   }
 
   return (
@@ -119,6 +181,7 @@ export default function ProyectosPage() {
                   </td>
                   <td style={{ padding:'12px 16px' }}>
                     <div style={{ display:'flex', gap:6 }}>
+                      <Btn variant="icon" onClick={()=>openTareas(p)} title="Ver tareas">📝</Btn>
                       <Btn variant="icon" onClick={()=>openEdit(p)} title="Editar">✏️</Btn>
                       <Btn variant="danger" style={{padding:'6px 8px'}} onClick={()=>openDelete(p)} title="Eliminar">🗑</Btn>
                     </div>
@@ -154,6 +217,64 @@ export default function ProyectosPage() {
         <div style={{ display:'flex', gap:10, justifyContent:'flex-end' }}>
           <Btn variant="secondary" onClick={closeModal}>Cancelar</Btn>
           <Btn variant="danger" onClick={handleDelete} disabled={saving}>{saving ? <Spinner size={14}/> : 'Eliminar'}</Btn>
+        </div>
+      </Modal>
+
+      {/* Tareas del proyecto */}
+      <Modal open={!!tareasProyecto} onClose={closeTareas} title={`Tareas — ${tareasProyecto?.nombre || ''}`} width={640}>
+        <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:14 }}>
+          <Btn onClick={openTareaCreate}>+ Nueva Tarea</Btn>
+        </div>
+        {tareasLoading ? (
+          <div style={{ textAlign:'center', padding:30 }}><Spinner size={24} /></div>
+        ) : tareas.length === 0 ? (
+          <EmptyState icon="📝" title="Sin tareas" description="Agrega la primera tarea de este proyecto." />
+        ) : (
+          <div style={{ display:'flex', flexDirection:'column', gap:8, maxHeight:360, overflowY:'auto' }}>
+            {tareas.map(t => (
+              <div key={t.id} style={{
+                display:'flex', justifyContent:'space-between', alignItems:'center', gap:10,
+                padding:'10px 14px', background:'var(--bg-elevated)', borderRadius:'var(--radius-sm)',
+                border:'1px solid var(--border)',
+              }}>
+                <div style={{ minWidth:0 }}>
+                  <div style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)' }}>{t.titulo}</div>
+                  <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:2 }}>{t.responsable || 'Sin responsable'}</div>
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+                  <Badge label={t.estado} />
+                  <Btn variant="icon" onClick={()=>openTareaEdit(t)} title="Editar">✏️</Btn>
+                  <Btn variant="danger" style={{padding:'6px 8px'}} onClick={()=>openTareaDelete(t)} title="Eliminar">🗑</Btn>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Modal>
+
+      {/* Crear/Editar tarea */}
+      <Modal open={tareaModal==='create'||tareaModal==='edit'} onClose={closeTareaModal}
+        title={tareaModal==='create' ? '+ Nueva Tarea' : 'Editar Tarea'}>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <Input label="Título" name="titulo" value={tareaForm.titulo} onChange={handleTareaChange} required placeholder="Ej: Diseñar base de datos" />
+          <Textarea label="Descripción" name="descripcion" value={tareaForm.descripcion} onChange={handleTareaChange} placeholder="Descripción de la tarea..." rows={3} />
+          <Select label="Estado" name="estado" value={tareaForm.estado} onChange={handleTareaChange} options={ESTADOS} required />
+          <Input label="Responsable" name="responsable" value={tareaForm.responsable} onChange={handleTareaChange} placeholder="Nombre del responsable" />
+          <div style={{ display:'flex', gap:10, justifyContent:'flex-end', marginTop:8 }}>
+            <Btn variant="secondary" onClick={closeTareaModal}>Cancelar</Btn>
+            <Btn onClick={handleTareaSave} disabled={tareaSaving}>{tareaSaving ? <Spinner size={14} color="#0a0d14" /> : 'Guardar'}</Btn>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Eliminar tarea */}
+      <Modal open={tareaModal==='delete'} onClose={closeTareaModal} title="Eliminar Tarea" width={400}>
+        <p style={{ color:'var(--text-secondary)', fontSize:14, marginBottom:20 }}>
+          ¿Confirmas eliminar la tarea <strong style={{ color:'var(--text-primary)' }}>"{tareaSeleccionada?.titulo}"</strong>? Esta acción no se puede deshacer.
+        </p>
+        <div style={{ display:'flex', gap:10, justifyContent:'flex-end' }}>
+          <Btn variant="secondary" onClick={closeTareaModal}>Cancelar</Btn>
+          <Btn variant="danger" onClick={handleTareaDelete} disabled={tareaSaving}>{tareaSaving ? <Spinner size={14}/> : 'Eliminar'}</Btn>
         </div>
       </Modal>
     </div>

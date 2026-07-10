@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: cl.duoc.innovatech.bff_innovatech.controller.MensajeBffControllerTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.212 s -- in cl.duoc.innovatech.bff_innovatech.controller.MensajeBffControllerTest

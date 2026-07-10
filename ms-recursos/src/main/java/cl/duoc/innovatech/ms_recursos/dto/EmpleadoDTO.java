@@ -25,6 +25,7 @@ public class EmpleadoDTO {
     @Email(message = "Email inválido")
     private String email;
 
+    @NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
 
     @NotNull(message = "El rol es obligatorio")

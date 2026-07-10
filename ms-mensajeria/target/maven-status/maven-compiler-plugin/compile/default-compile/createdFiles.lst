@@ -1,0 +1,14 @@
+cl\duoc\innovatech\ms_mensajeria\service\impl\MensajeServiceImpl.class
+cl\duoc\innovatech\ms_mensajeria\controller\MensajeController.class
+cl\duoc\innovatech\ms_mensajeria\service\MensajeService.class
+cl\duoc\innovatech\ms_mensajeria\MsMensajeriaApplication.class
+cl\duoc\innovatech\ms_mensajeria\exception\RecursoNoEncontradoException.class
+cl\duoc\innovatech\ms_mensajeria\dto\ConversacionDTO.class
+cl\duoc\innovatech\ms_mensajeria\config\SwaggerConfig.class
+cl\duoc\innovatech\ms_mensajeria\repository\MensajeRepository.class
+cl\duoc\innovatech\ms_mensajeria\dto\MensajeDTO$MensajeDTOBuilder.class
+cl\duoc\innovatech\ms_mensajeria\exception\GlobalExceptionHandler.class
+cl\duoc\innovatech\ms_mensajeria\dto\MensajeDTO.class
+cl\duoc\innovatech\ms_mensajeria\model\Mensaje$MensajeBuilder.class
+cl\duoc\innovatech\ms_mensajeria\dto\ConversacionDTO$ConversacionDTOBuilder.class
+cl\duoc\innovatech\ms_mensajeria\model\Mensaje.class

@@ -34,19 +34,19 @@ public class RecursosBffController {
     @GetMapping(&quot;/empleados&quot;)
     @Operation(summary = &quot;Listar empleados&quot;)
     public ResponseEntity&lt;List&lt;EmpleadoResponse&gt;&gt; listarEmpleados() {
-<span class="nc" id="L37">        return ResponseEntity.ok(recursosBffService.listarEmpleados());</span>
+<span class="fc" id="L37">        return ResponseEntity.ok(recursosBffService.listarEmpleados());</span>
     }
 
     @GetMapping(&quot;/empleados/{id}&quot;)
     @Operation(summary = &quot;Obtener empleado por ID&quot;)
     public ResponseEntity&lt;EmpleadoResponse&gt; obtenerEmpleado(@PathVariable Long id) {
-<span class="nc" id="L43">        return ResponseEntity.ok(recursosBffService.obtenerEmpleadoPorId(id));</span>
+<span class="fc" id="L43">        return ResponseEntity.ok(recursosBffService.obtenerEmpleadoPorId(id));</span>
     }
 
     @PostMapping(&quot;/empleados&quot;)
     @Operation(summary = &quot;Crear empleado&quot;)
     public ResponseEntity&lt;EmpleadoResponse&gt; crearEmpleado(@Valid @RequestBody EmpleadoRequest request) {
-<span class="nc" id="L49">        return ResponseEntity.status(HttpStatus.CREATED).body(recursosBffService.crearEmpleado(request));</span>
+<span class="fc" id="L49">        return ResponseEntity.status(HttpStatus.CREATED).body(recursosBffService.crearEmpleado(request));</span>
     }
 
     @PutMapping(&quot;/empleados/{id}&quot;)
@@ -54,7 +54,7 @@ public class RecursosBffController {
     public ResponseEntity&lt;EmpleadoResponse&gt; actualizarEmpleado(
             @PathVariable Long id,
             @Valid @RequestBody EmpleadoRequest request) {
-<span class="nc" id="L57">        return ResponseEntity.ok(recursosBffService.actualizarEmpleado(id, request));</span>
+<span class="fc" id="L57">        return ResponseEntity.ok(recursosBffService.actualizarEmpleado(id, request));</span>
     }
 
     @PatchMapping(&quot;/empleados/{id}/disponibilidad&quot;)
@@ -63,14 +63,14 @@ public class RecursosBffController {
     public ResponseEntity&lt;EmpleadoResponse&gt; actualizarDisponibilidad(
             @PathVariable Long id,
             @RequestParam String disponibilidad) {
-<span class="nc" id="L66">        return ResponseEntity.ok(recursosBffService.actualizarDisponibilidad(id, disponibilidad));</span>
+<span class="fc" id="L66">        return ResponseEntity.ok(recursosBffService.actualizarDisponibilidad(id, disponibilidad));</span>
     }
 
     @DeleteMapping(&quot;/empleados/{id}&quot;)
     @Operation(summary = &quot;Eliminar empleado (baja lógica)&quot;)
     public ResponseEntity&lt;Void&gt; eliminarEmpleado(@PathVariable Long id) {
-<span class="nc" id="L72">        recursosBffService.eliminarEmpleado(id);</span>
-<span class="nc" id="L73">        return ResponseEntity.noContent().build();</span>
+<span class="fc" id="L72">        recursosBffService.eliminarEmpleado(id);</span>
+<span class="fc" id="L73">        return ResponseEntity.noContent().build();</span>
     }
 
     // ── ASIGNACIONES ───────────────────────────────────────────────────────────
@@ -78,27 +78,27 @@ public class RecursosBffController {
     @GetMapping(&quot;/asignaciones&quot;)
     @Operation(summary = &quot;Listar asignaciones&quot;)
     public ResponseEntity&lt;List&lt;AsignacionResponse&gt;&gt; listarAsignaciones() {
-<span class="nc" id="L81">        return ResponseEntity.ok(recursosBffService.listarAsignaciones());</span>
+<span class="fc" id="L81">        return ResponseEntity.ok(recursosBffService.listarAsignaciones());</span>
     }
 
     @PostMapping(&quot;/asignaciones&quot;)
     @Operation(summary = &quot;Crear asignación empleado-proyecto&quot;)
     public ResponseEntity&lt;AsignacionResponse&gt; crearAsignacion(@Valid @RequestBody AsignacionRequest request) {
-<span class="nc" id="L87">        return ResponseEntity.status(HttpStatus.CREATED).body(recursosBffService.crearAsignacion(request));</span>
+<span class="fc" id="L87">        return ResponseEntity.status(HttpStatus.CREATED).body(recursosBffService.crearAsignacion(request));</span>
     }
 
     @DeleteMapping(&quot;/asignaciones/{id}&quot;)
     @Operation(summary = &quot;Desactivar asignación&quot;)
     public ResponseEntity&lt;Void&gt; desactivarAsignacion(@PathVariable Long id) {
-<span class="nc" id="L93">        recursosBffService.desactivarAsignacion(id);</span>
-<span class="nc" id="L94">        return ResponseEntity.noContent().build();</span>
+<span class="fc" id="L93">        recursosBffService.desactivarAsignacion(id);</span>
+<span class="fc" id="L94">        return ResponseEntity.noContent().build();</span>
     }
 
     @GetMapping(&quot;/recursos/resumen&quot;)
     @Operation(summary = &quot;Resumen de recursos humanos&quot;,
                description = &quot;Totales de empleados, disponibles, ocupados y asignaciones activas&quot;)
     public ResponseEntity&lt;ResumenRecursosResponse&gt; resumen() {
-<span class="nc" id="L101">        return ResponseEntity.ok(recursosBffService.obtenerResumen());</span>
+<span class="fc" id="L101">        return ResponseEntity.ok(recursosBffService.obtenerResumen());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

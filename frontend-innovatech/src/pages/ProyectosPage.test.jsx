@@ -54,4 +54,37 @@ describe('ProyectosPage', () => {
       expect.objectContaining({ nombre: 'Nuevo Proyecto X' })
     ))
   })
+
+  it('abre las tareas de un proyecto y muestra la lista', async () => {
+    vi.spyOn(api, 'getProyectos').mockResolvedValue(PROYECTOS)
+    vi.spyOn(api, 'getTareasPorProyecto').mockResolvedValue([
+      { id: 1, titulo: 'Diseñar base de datos', estado: 'PENDIENTE', responsable: 'Bryan Muñoz', proyectoId: 1 },
+    ])
+    renderPage(<ProyectosPage />)
+    await waitFor(() => expect(screen.getByText('Portal Web')).toBeInTheDocument())
+
+    fireEvent.click(screen.getAllByTitle('Ver tareas')[0])
+
+    await waitFor(() => expect(api.getTareasPorProyecto).toHaveBeenCalledWith(1))
+    expect(await screen.findByText('Diseñar base de datos')).toBeInTheDocument()
+  })
+
+  it('crea una tarea dentro de un proyecto', async () => {
+    vi.spyOn(api, 'getProyectos').mockResolvedValue(PROYECTOS)
+    vi.spyOn(api, 'getTareasPorProyecto').mockResolvedValue([])
+    vi.spyOn(api, 'createTarea').mockResolvedValue({ id: 1 })
+    renderPage(<ProyectosPage />)
+    await waitFor(() => expect(screen.getByText('Portal Web')).toBeInTheDocument())
+
+    fireEvent.click(screen.getAllByTitle('Ver tareas')[0])
+    await waitFor(() => expect(screen.getByText('Sin tareas')).toBeInTheDocument())
+
+    fireEvent.click(screen.getByText('+ Nueva Tarea'))
+    fireEvent.change(screen.getByPlaceholderText('Ej: Diseñar base de datos'), { target: { value: 'Implementar API' } })
+    fireEvent.click(screen.getByText('Guardar'))
+
+    await waitFor(() => expect(api.createTarea).toHaveBeenCalledWith(
+      expect.objectContaining({ titulo: 'Implementar API', proyectoId: 1 })
+    ))
+  })
 })

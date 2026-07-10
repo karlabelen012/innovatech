@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { getDashboard, getKpis } from '../services/api.js'
 import { Card, Badge, Spinner, ProgressBar, EmptyState } from '../atoms/index.jsx'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts'
+import { usePolling } from '../hooks/usePolling.js'
+import { getPollInterval } from '../utils/prefs.js'
 
 const PALETTE = ['#00d4b3','#4d7cfe','#f59e0b','#ef4444','#10b981','#7c5cbf']
 
@@ -32,13 +34,18 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  useEffect(() => {
-    setLoading(true)
-    getDashboard()
+  const load = useCallback((silent = false) => {
+    if (!silent) setLoading(true)
+    return getDashboard()
       .then(d => { setData(d); setError(false) })
       .catch(() => { setData(MOCK_DASH); setError(true) })
       .finally(() => setLoading(false))
-  }, [refreshTick])
+  }, [])
+
+  useEffect(() => { load() }, [refreshTick, load])
+
+  const pollMs = getPollInterval()
+  usePolling(() => load(true), pollMs, pollMs > 0)
 
   if (loading) return <LoadingGrid />
 

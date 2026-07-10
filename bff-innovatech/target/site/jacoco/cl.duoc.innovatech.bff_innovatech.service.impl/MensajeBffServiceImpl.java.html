@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MensajeBffServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.service.impl</a> &gt; <span class="el_source">MensajeBffServiceImpl.java</span></div><h1>MensajeBffServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.service.impl;
+
+import cl.duoc.innovatech.bff_innovatech.client.MsMensajeriaClient;
+import cl.duoc.innovatech.bff_innovatech.dto.request.MensajeRequest;
+import cl.duoc.innovatech.bff_innovatech.dto.response.ConversacionResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.MensajeResponse;
+import cl.duoc.innovatech.bff_innovatech.service.MensajeBffService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Implementación del servicio BFF para mensajería (chat interno).
+ * Delega al cliente HTTP de ms-mensajeria.
+ */
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L20">@Slf4j</span>
+public class MensajeBffServiceImpl implements MensajeBffService {
+
+    private final MsMensajeriaClient msMensajeriaClient;
+
+    @Override
+    public MensajeResponse enviar(MensajeRequest request) {
+<span class="fc" id="L27">        log.info(&quot;BFF → ms-mensajeria: enviar mensaje de {} a {}&quot;, request.getRemitenteEmail(), request.getDestinatarioEmail());</span>
+<span class="fc" id="L28">        return msMensajeriaClient.enviar(request);</span>
+    }
+
+    @Override
+    public List&lt;MensajeResponse&gt; obtenerConversacion(String email1, String email2) {
+<span class="fc" id="L33">        log.info(&quot;BFF → ms-mensajeria: conversacion entre {} y {}&quot;, email1, email2);</span>
+<span class="fc" id="L34">        return msMensajeriaClient.obtenerConversacion(email1, email2);</span>
+    }
+
+    @Override
+    public List&lt;ConversacionResponse&gt; obtenerInbox(String email) {
+<span class="fc" id="L39">        log.info(&quot;BFF → ms-mensajeria: inbox de {}&quot;, email);</span>
+<span class="fc" id="L40">        return msMensajeriaClient.obtenerInbox(email);</span>
+    }
+
+    @Override
+    public int marcarComoLeidos(String destinatarioEmail, String remitenteEmail) {
+<span class="fc" id="L45">        log.info(&quot;BFF → ms-mensajeria: marcar leidos destinatario={} remitente={}&quot;, destinatarioEmail, remitenteEmail);</span>
+<span class="fc" id="L46">        return msMensajeriaClient.marcarComoLeidos(destinatarioEmail, remitenteEmail);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

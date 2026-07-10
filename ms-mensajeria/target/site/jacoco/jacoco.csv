@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+ms-mensajeria,cl.duoc.innovatech.ms_mensajeria.controller,MensajeController,0,39,0,0,0,6,0,5,0,5
+ms-mensajeria,cl.duoc.innovatech.ms_mensajeria.service.impl,MensajeServiceImpl,7,223,4,8,0,50,4,11,0,9
+ms-mensajeria,cl.duoc.innovatech.ms_mensajeria.config,SwaggerConfig,25,0,0,0,9,0,2,0,2,0
+ms-mensajeria,cl.duoc.innovatech.ms_mensajeria,MsMensajeriaApplication,5,3,0,0,2,1,1,1,1,1
+ms-mensajeria,cl.duoc.innovatech.ms_mensajeria.model,Mensaje,14,0,4,0,3,0,3,0,1,0
+ms-mensajeria,cl.duoc.innovatech.ms_mensajeria.exception,RecursoNoEncontradoException,0,4,0,0,0,2,0,1,0,1
+ms-mensajeria,cl.duoc.innovatech.ms_mensajeria.exception,GlobalExceptionHandler,95,84,0,0,18,15,3,4,3,4

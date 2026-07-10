@@ -24,7 +24,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 <span class="fc" id="L24">                        .allowedMethods(&quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;, &quot;PATCH&quot;, &quot;DELETE&quot;, &quot;OPTIONS&quot;)</span>
 <span class="fc" id="L25">                        .allowedHeaders(&quot;*&quot;)</span>
 <span class="fc" id="L26">                        .maxAge(3600);</span>
-<span class="fc" id="L27">            }</span>
+<span class="fc" id="L27">                registry.addMapping(&quot;/api/auth/**&quot;)</span>
+<span class="fc" id="L28">                        .allowedOrigins(origins)</span>
+<span class="fc" id="L29">                        .allowedMethods(&quot;POST&quot;, &quot;OPTIONS&quot;)</span>
+<span class="fc" id="L30">                        .allowedHeaders(&quot;*&quot;)</span>
+<span class="fc" id="L31">                        .maxAge(3600);</span>
+<span class="fc" id="L32">            }</span>
         };
     }
 }

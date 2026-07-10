@@ -12,6 +12,8 @@ const PAGE_TITLES = {
   '/equipos': 'Equipos',
   '/kpis': 'KPIs',
   '/reportes': 'Reportes',
+  '/chat': 'Chat',
+  '/configuracion': 'Configuración',
   '/perfil': 'Mi Perfil',
 }
 
@@ -41,7 +43,7 @@ export default function AppLayout() {
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       <Sidebar bffOk={bffOk} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <TopBar bffOk={bffOk} onRefresh={handleRefresh} refreshing={refreshing} title={title} notifCount={3} />
+        <TopBar bffOk={bffOk} onRefresh={handleRefresh} refreshing={refreshing} title={title} />
         <main style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-void)', padding: '24px' }}>
           <Outlet context={{ bffOk, refreshTick }} />
         </main>

@@ -1,0 +1,3 @@
+{
+    "java.compiler.nullAnalysis.mode": "disabled"
+}

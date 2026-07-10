@@ -1,8 +1,10 @@
-package cl.duoc.innovatech.ms_proyectos;
+package cl.duoc.innovatech.ms_proyectos.service;
 
+import cl.duoc.innovatech.ms_proyectos.dto.ProyectoDTO;
+import cl.duoc.innovatech.ms_proyectos.exception.RecursoNoEncontradoException;
 import cl.duoc.innovatech.ms_proyectos.model.Proyecto;
 import cl.duoc.innovatech.ms_proyectos.repository.ProyectoRepository;
-import cl.duoc.innovatech.ms_proyectos.service.ProyectoService;
+import cl.duoc.innovatech.ms_proyectos.service.impl.ProyectoServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProyectoServiceTest {
@@ -23,9 +30,10 @@ class ProyectoServiceTest {
     private ProyectoRepository proyectoRepository;
 
     @InjectMocks
-    private ProyectoService proyectoService;
+    private ProyectoServiceImpl proyectoService;
 
     private Proyecto proyecto;
+    private ProyectoDTO proyectoDTO;
 
     @BeforeEach
     void setUp() {
@@ -37,42 +45,49 @@ class ProyectoServiceTest {
                 .avance(0)
                 .responsable("Bryan Muñoz")
                 .build();
+
+        proyectoDTO = ProyectoDTO.builder()
+                .nombre("Portal Clientes")
+                .descripcion("Sistema de gestión de clientes")
+                .estado("PENDIENTE")
+                .avance(0)
+                .responsable("Bryan Muñoz")
+                .build();
     }
 
     @Test
     void listar_retornaLista() {
         when(proyectoRepository.findAll()).thenReturn(List.of(proyecto));
-        List<Proyecto> resultado = proyectoService.listar();
+        List<ProyectoDTO> resultado = proyectoService.listar();
         assertThat(resultado).hasSize(1);
         assertThat(resultado.get(0).getNombre()).isEqualTo("Portal Clientes");
     }
 
     @Test
-    void buscarPorId_existente_retornaProyecto() {
+    void obtenerPorId_existente_retornaProyecto() {
         when(proyectoRepository.findById(1L)).thenReturn(Optional.of(proyecto));
-        Optional<Proyecto> resultado = proyectoService.buscarPorId(1L);
-        assertThat(resultado).isPresent();
-        assertThat(resultado.get().getId()).isEqualTo(1L);
+        ProyectoDTO resultado = proyectoService.obtenerPorId(1L);
+        assertThat(resultado.getId()).isEqualTo(1L);
     }
 
     @Test
-    void buscarPorId_noExistente_retornaVacio() {
+    void obtenerPorId_noExistente_lanzaExcepcion() {
         when(proyectoRepository.findById(99L)).thenReturn(Optional.empty());
-        Optional<Proyecto> resultado = proyectoService.buscarPorId(99L);
-        assertThat(resultado).isEmpty();
+        assertThatThrownBy(() -> proyectoService.obtenerPorId(99L))
+                .isInstanceOf(RecursoNoEncontradoException.class);
     }
 
     @Test
-    void guardar_retornaProyectoGuardado() {
-        when(proyectoRepository.save(proyecto)).thenReturn(proyecto);
-        Proyecto resultado = proyectoService.guardar(proyecto);
+    void crear_retornaProyectoGuardado() {
+        when(proyectoRepository.save(any(Proyecto.class))).thenReturn(proyecto);
+        ProyectoDTO resultado = proyectoService.crear(proyectoDTO);
         assertThat(resultado.getNombre()).isEqualTo("Portal Clientes");
-        verify(proyectoRepository, times(1)).save(proyecto);
+        verify(proyectoRepository, times(1)).save(any(Proyecto.class));
     }
 
     @Test
     void actualizar_existente_actualizaDatos() {
-        Proyecto datosNuevos = Proyecto.builder()
+        ProyectoDTO datosNuevos = ProyectoDTO.builder()
                 .nombre("Portal Actualizado")
                 .descripcion("Descripcion nueva")
                 .estado("EN_PROGRESO")
@@ -83,40 +98,38 @@ class ProyectoServiceTest {
         when(proyectoRepository.findById(1L)).thenReturn(Optional.of(proyecto));
         when(proyectoRepository.save(any(Proyecto.class))).thenAnswer(i -> i.getArgument(0));
 
-        Optional<Proyecto> resultado = proyectoService.actualizar(1L, datosNuevos);
-        assertThat(resultado).isPresent();
-        assertThat(resultado.get().getNombre()).isEqualTo("Portal Actualizado");
-        assertThat(resultado.get().getEstado()).isEqualTo("EN_PROGRESO");
-        assertThat(resultado.get().getAvance()).isEqualTo(50);
+        ProyectoDTO resultado = proyectoService.actualizar(1L, datosNuevos);
+        assertThat(resultado.getNombre()).isEqualTo("Portal Actualizado");
+        assertThat(resultado.getEstado()).isEqualTo("EN_PROGRESO");
+        assertThat(resultado.getAvance()).isEqualTo(50);
     }
 
     @Test
-    void actualizar_noExistente_retornaVacio() {
+    void actualizar_noExistente_lanzaExcepcion() {
         when(proyectoRepository.findById(99L)).thenReturn(Optional.empty());
-        Optional<Proyecto> resultado = proyectoService.actualizar(99L, proyecto);
-        assertThat(resultado).isEmpty();
+        assertThatThrownBy(() -> proyectoService.actualizar(99L, proyectoDTO))
+                .isInstanceOf(RecursoNoEncontradoException.class);
     }
 
     @Test
-    void eliminar_existente_retornaTrue() {
+    void eliminar_existente_eliminaProyecto() {
         when(proyectoRepository.existsById(1L)).thenReturn(true);
-        boolean resultado = proyectoService.eliminar(1L);
-        assertThat(resultado).isTrue();
+        proyectoService.eliminar(1L);
         verify(proyectoRepository).deleteById(1L);
     }
 
     @Test
-    void eliminar_noExistente_retornaFalse() {
+    void eliminar_noExistente_lanzaExcepcion() {
         when(proyectoRepository.existsById(99L)).thenReturn(false);
-        boolean resultado = proyectoService.eliminar(99L);
-        assertThat(resultado).isFalse();
+        assertThatThrownBy(() -> proyectoService.eliminar(99L))
+                .isInstanceOf(RecursoNoEncontradoException.class);
         verify(proyectoRepository, never()).deleteById(any());
     }
 
     @Test
     void listarPorEstado_retornaFiltrados() {
         when(proyectoRepository.findByEstado("PENDIENTE")).thenReturn(List.of(proyecto));
-        List<Proyecto> resultado = proyectoService.listarPorEstado("PENDIENTE");
+        List<ProyectoDTO> resultado = proyectoService.listarPorEstado("PENDIENTE");
         assertThat(resultado).hasSize(1);
         assertThat(resultado.get(0).getEstado()).isEqualTo("PENDIENTE");
     }

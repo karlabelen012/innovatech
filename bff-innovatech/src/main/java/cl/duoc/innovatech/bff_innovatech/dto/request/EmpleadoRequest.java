@@ -16,6 +16,7 @@ public class EmpleadoRequest {
     @Email(message = "Email inválido")
     private String email;
 
+    @NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
 
     @NotBlank(message = "El rol es obligatorio")

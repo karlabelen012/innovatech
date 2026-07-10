@@ -5,6 +5,21 @@ import { AuthProvider } from '../context/AuthContext.jsx'
 import { NotifProvider } from '../context/NotifContext.jsx'
 import LoginPage from './LoginPage.jsx'
 
+// El login real lo hace el BFF (POST /api/auth/login); se mockea la llamada HTTP.
+vi.mock('../services/api.js', () => ({
+  login: vi.fn((email, password) => {
+    const validos = {
+      'admin@innovatech.cl': '1234',
+      'bryan@innovatech.cl': '1234',
+      'karla@innovatech.cl': '1234',
+    }
+    if (validos[email] === password) {
+      return Promise.resolve({ token: 'fake.jwt.token', email })
+    }
+    return Promise.reject(new Error('401 Credenciales inválidas'))
+  }),
+}))
+
 function renderLogin() {
   return render(
     <AuthProvider>

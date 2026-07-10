@@ -16,8 +16,8 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    setTimeout(() => {
-      const res = login(form.email, form.password)
+    setTimeout(async () => {
+      const res = await login(form.email, form.password)
       if (res.ok) navigate('/dashboard')
       else setError(res.error)
       setLoading(false)

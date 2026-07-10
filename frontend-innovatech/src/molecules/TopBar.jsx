@@ -1,10 +1,23 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useNotif } from '../context/NotifContext.jsx'
 import { Avatar, Btn, Spinner } from '../atoms/index.jsx'
 
-export default function TopBar({ bffOk, onRefresh, refreshing, title, notifCount = 0 }) {
+const TYPE_ICON = { success: '✅', error: '⚠️', warning: '⚠️', info: '📋' }
+
+function relativeTime(date) {
+  const diffMin = Math.floor((Date.now() - new Date(date).getTime()) / 60000)
+  if (diffMin < 1) return 'ahora'
+  if (diffMin < 60) return `hace ${diffMin}m`
+  const diffH = Math.floor(diffMin / 60)
+  if (diffH < 24) return `hace ${diffH}h`
+  return `hace ${Math.floor(diffH / 24)}d`
+}
+
+export default function TopBar({ bffOk, onRefresh, refreshing, title }) {
   const { user, logout } = useAuth()
+  const { historial, noLeidas, marcarHistorialLeido } = useNotif()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
@@ -12,6 +25,15 @@ export default function TopBar({ bffOk, onRefresh, refreshing, title, notifCount
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const toggleNotif = () => {
+    setNotifOpen(o => {
+      const next = !o
+      if (next) marcarHistorialLeido()
+      return next
+    })
+    setMenuOpen(false)
   }
 
   return (
@@ -52,51 +74,53 @@ export default function TopBar({ bffOk, onRefresh, refreshing, title, notifCount
 
         {/* Notifications */}
         <div style={{ position: 'relative' }}>
-          <button onClick={() => { setNotifOpen(o => !o); setMenuOpen(false) }}
+          <button onClick={toggleNotif}
             style={{
               background: 'var(--bg-elevated)', border: '1px solid var(--border)',
               borderRadius: 'var(--radius-sm)', padding: '7px 10px', cursor: 'pointer',
               color: 'var(--text-secondary)', fontSize: 16, position: 'relative', display: 'flex',
             }}>
             🔔
-            {notifCount > 0 && (
+            {noLeidas > 0 && (
               <span style={{
                 position: 'absolute', top: -4, right: -4,
                 background: 'var(--red)', color: '#fff',
                 fontSize: 9, fontWeight: 700, borderRadius: '50%',
                 width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>{notifCount}</span>
+              }}>{noLeidas}</span>
             )}
           </button>
           {notifOpen && (
             <div className="animate-fade-in" style={{
               position: 'absolute', right: 0, top: 44,
               background: 'var(--bg-card)', border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-md)', width: 280,
+              borderRadius: 'var(--radius-md)', width: 300,
               boxShadow: 'var(--shadow-modal)', zIndex: 200, overflow: 'hidden',
             }}>
               <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13 }}>
                 Notificaciones
               </div>
-              <div style={{ padding: '8px 0' }}>
-                {[
-                  { icon: '📋', msg: 'Proyecto "Portal Fintech" actualizado', time: 'hace 2m' },
-                  { icon: '👥', msg: 'Nuevo empleado registrado', time: 'hace 15m' },
-                  { icon: '⚠️', msg: 'BFF desconectado momentáneamente', time: 'hace 1h' },
-                ].map((n, i) => (
-                  <div key={i} style={{
-                    display: 'flex', gap: 10, padding: '10px 16px', cursor: 'pointer',
-                    borderBottom: i < 2 ? '1px solid var(--border)' : 'none',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'none'}>
-                    <span>{n.icon}</span>
-                    <div>
-                      <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{n.msg}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{n.time}</div>
-                    </div>
+              <div style={{ padding: '8px 0', maxHeight: 320, overflowY: 'auto' }}>
+                {historial.length === 0 ? (
+                  <div style={{ padding: '20px 16px', textAlign: 'center', fontSize: 12, color: 'var(--text-muted)' }}>
+                    Sin notificaciones todavía
                   </div>
-                ))}
+                ) : (
+                  historial.map((n, i) => (
+                    <div key={n.id} style={{
+                      display: 'flex', gap: 10, padding: '10px 16px', cursor: 'pointer',
+                      borderBottom: i < historial.length - 1 ? '1px solid var(--border)' : 'none',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                      <span>{TYPE_ICON[n.type] || '📋'}</span>
+                      <div>
+                        <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{n.msg}</div>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{relativeTime(n.fecha)}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -126,7 +150,7 @@ export default function TopBar({ bffOk, onRefresh, refreshing, title, notifCount
               boxShadow: 'var(--shadow-modal)', zIndex: 200, overflow: 'hidden',
             }}>
               <MenuItem icon="👤" label="Mi Perfil" onClick={() => { navigate('/perfil'); setMenuOpen(false) }} />
-              <MenuItem icon="⚙️" label="Configuración" onClick={() => setMenuOpen(false)} />
+              <MenuItem icon="⚙️" label="Configuración" onClick={() => { navigate('/configuracion'); setMenuOpen(false) }} />
               <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
               <MenuItem icon="🚪" label="Cerrar Sesión" onClick={handleLogout} danger />
             </div>

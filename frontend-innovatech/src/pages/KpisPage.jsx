@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { getKpis, getKpisByCategory } from '../services/api.js'
 import { Card, Spinner, EmptyState, Badge } from '../atoms/index.jsx'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts'
 import { useNotif } from '../context/NotifContext.jsx'
+import { usePolling } from '../hooks/usePolling.js'
+import { getPollInterval } from '../utils/prefs.js'
 
 const MOCK_KPIS = [
   { id:1, nombre:'Proyectos Completados', valor:85, unidad:'%', categoria:'PROYECTOS', descripcion:'Tasa de finalización en tiempo' },
@@ -26,12 +28,18 @@ export default function KpisPage() {
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('ALL')
 
-  useEffect(() => {
-    setLoading(true)
+  const load = useCallback((silent = false) => {
+    if (!silent) setLoading(true)
     const fetch = activeCategory === 'ALL' ? getKpis() : getKpisByCategory(activeCategory)
-    fetch.then(d => setKpis(d)).catch(() => { setKpis(MOCK_KPIS); push('Usando datos de ejemplo', 'warning') })
+    return fetch.then(d => setKpis(d))
+      .catch(() => { if (!silent) { setKpis(MOCK_KPIS); push('Usando datos de ejemplo', 'warning') } })
       .finally(() => setLoading(false))
-  }, [refreshTick, activeCategory])
+  }, [activeCategory, push])
+
+  useEffect(() => { load() }, [refreshTick, load])
+
+  const pollMs = getPollInterval()
+  usePolling(() => load(true), pollMs, pollMs > 0)
 
   const displayed = activeCategory === 'ALL' ? kpis : kpis.filter(k => k.categoria === activeCategory)
   const radarData = CATEGORIES.map(c => {

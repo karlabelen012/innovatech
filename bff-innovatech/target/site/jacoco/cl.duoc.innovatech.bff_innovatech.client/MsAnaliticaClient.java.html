@@ -3,6 +3,7 @@
 import cl.duoc.innovatech.bff_innovatech.dto.response.DashboardResponse;
 import cl.duoc.innovatech.bff_innovatech.dto.response.KpiMetricaResponse;
 import cl.duoc.innovatech.bff_innovatech.exception.MicroservicioNoDisponibleException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,17 +11,18 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 /**
  * Cliente HTTP del BFF hacia ms-analitica (puerto 8083).
+ * Protegido por Circuit Breaker (Resilience4j): si ms-analitica cae,
+ * el circuito se abre y las llamadas fallan rápido sin afectar a los demás servicios.
  */
 @Component
 @RequiredArgsConstructor
-<span class="fc" id="L23">@Slf4j</span>
+<span class="fc" id="L25">@Slf4j</span>
 public class MsAnaliticaClient {
 
     private final RestTemplate restTemplate;
@@ -31,36 +33,39 @@ public class MsAnaliticaClient {
     private static final String DASH = &quot;/api/v1/dashboard&quot;;
     private static final String KPI  = &quot;/api/v1/kpis&quot;;
 
+    @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;obtenerDashboardFallback&quot;)
     public DashboardResponse obtenerDashboard() {
-        try {
-<span class="nc" id="L36">            log.debug(&quot;GET {}{}&quot;, baseUrl, DASH);</span>
-<span class="nc" id="L37">            return restTemplate.getForObject(baseUrl + DASH, DashboardResponse.class);</span>
-<span class="nc" id="L38">        } catch (ResourceAccessException ex) {</span>
-<span class="nc" id="L39">            throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
-        }
+<span class="fc" id="L38">        log.debug(&quot;GET {}{}&quot;, baseUrl, DASH);</span>
+<span class="fc" id="L39">        return restTemplate.getForObject(baseUrl + DASH, DashboardResponse.class);</span>
     }
 
+    private DashboardResponse obtenerDashboardFallback(Throwable ex) {
+<span class="nc" id="L43">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+    }
+
+    @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;listarKpisFallback&quot;)
     public List&lt;KpiMetricaResponse&gt; listarKpis() {
-        try {
-<span class="nc" id="L45">            ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                    baseUrl + KPI, HttpMethod.GET, null,
-<span class="nc" id="L47">                    new ParameterizedTypeReference&lt;&gt;() {});</span>
-<span class="nc" id="L48">            return resp.getBody();</span>
-<span class="nc" id="L49">        } catch (ResourceAccessException ex) {</span>
-<span class="nc" id="L50">            throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
-        }
+<span class="fc" id="L48">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
+                baseUrl + KPI, HttpMethod.GET, null,
+<span class="fc" id="L50">                new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="fc" id="L51">        return resp.getBody();</span>
     }
 
+    private List&lt;KpiMetricaResponse&gt; listarKpisFallback(Throwable ex) {
+<span class="nc" id="L55">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+    }
+
+    @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;listarKpisPorCategoriaFallback&quot;)
     public List&lt;KpiMetricaResponse&gt; listarKpisPorCategoria(String categoria) {
-        try {
-<span class="nc" id="L56">            ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                    baseUrl + KPI + &quot;?categoria=&quot; + categoria,
-                    HttpMethod.GET, null,
-<span class="nc" id="L59">                    new ParameterizedTypeReference&lt;&gt;() {});</span>
-<span class="nc" id="L60">            return resp.getBody();</span>
-<span class="nc" id="L61">        } catch (ResourceAccessException ex) {</span>
-<span class="nc" id="L62">            throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
-        }
+<span class="fc" id="L60">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
+                baseUrl + KPI + &quot;?categoria=&quot; + categoria,
+                HttpMethod.GET, null,
+<span class="fc" id="L63">                new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="fc" id="L64">        return resp.getBody();</span>
+    }
+
+    private List&lt;KpiMetricaResponse&gt; listarKpisPorCategoriaFallback(String categoria, Throwable ex) {
+<span class="nc" id="L68">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

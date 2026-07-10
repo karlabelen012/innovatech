@@ -24,6 +24,11 @@ public class CorsConfig {
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .maxAge(3600);
+                registry.addMapping("/api/auth/**")
+                        .allowedOrigins(origins)
+                        .allowedMethods("POST", "OPTIONS")
+                        .allowedHeaders("*")
+                        .maxAge(3600);
             }
         };
     }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtAuthFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.security</a> &gt; <span class="el_source">JwtAuthFilter.java</span></div><h1>JwtAuthFilter.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.security;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * Lee el header Authorization: Bearer &lt;token&gt;, valida el JWT y autentica
+ * la request. Instanciado manualmente como @Bean en SecurityConfig.
+ */
+public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private final JwtService jwtService;
+
+<span class="fc" id="L24">    public JwtAuthFilter(JwtService jwtService) {</span>
+<span class="fc" id="L25">        this.jwtService = jwtService;</span>
+<span class="fc" id="L26">    }</span>
+
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                     @NonNull HttpServletResponse response,
+                                     @NonNull FilterChain chain)
+            throws ServletException, IOException {
+<span class="fc" id="L33">        String header = request.getHeader(&quot;Authorization&quot;);</span>
+<span class="pc bpc" id="L34" title="1 of 4 branches missed.">        if (header != null &amp;&amp; header.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="fc" id="L35">            String token = header.substring(7);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            if (jwtService.isTokenValid(token)) {</span>
+<span class="fc" id="L37">                String email = jwtService.extractEmail(token);</span>
+<span class="fc" id="L38">                var authentication = new UsernamePasswordAuthenticationToken(</span>
+<span class="fc" id="L39">                        email, null, List.of(new SimpleGrantedAuthority(&quot;ROLE_USER&quot;)));</span>
+<span class="fc" id="L40">                SecurityContextHolder.getContext().setAuthentication(authentication);</span>
+            }
+        }
+<span class="fc" id="L43">        chain.doFilter(request, response);</span>
+<span class="fc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

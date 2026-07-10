@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MensajeController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-mensajeria</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.ms_mensajeria.controller</a> &gt; <span class="el_source">MensajeController.java</span></div><h1>MensajeController.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.ms_mensajeria.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import cl.duoc.innovatech.ms_mensajeria.dto.ConversacionDTO;
+import cl.duoc.innovatech.ms_mensajeria.dto.MensajeDTO;
+import cl.duoc.innovatech.ms_mensajeria.service.MensajeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping(&quot;/api/v1/mensajes&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;Mensajería&quot;, description = &quot;Chat interno entre usuarios de Innovatech Solutions&quot;)
+public class MensajeController {
+
+    private final MensajeService mensajeService;
+
+    @PostMapping
+    @Operation(summary = &quot;Enviar un mensaje&quot;)
+    public ResponseEntity&lt;MensajeDTO&gt; enviar(@Valid @RequestBody MensajeDTO dto) {
+<span class="fc" id="L29">        return ResponseEntity.status(HttpStatus.CREATED).body(mensajeService.enviar(dto));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Obtener un mensaje por ID&quot;)
+    public ResponseEntity&lt;MensajeDTO&gt; obtenerPorId(@PathVariable Long id) {
+<span class="fc" id="L35">        return ResponseEntity.ok(mensajeService.obtenerPorId(id));</span>
+    }
+
+    @GetMapping(&quot;/conversacion&quot;)
+    @Operation(summary = &quot;Obtener el historial de mensajes entre dos usuarios&quot;)
+    public ResponseEntity&lt;List&lt;MensajeDTO&gt;&gt; obtenerConversacion(
+            @RequestParam String email1, @RequestParam String email2) {
+<span class="fc" id="L42">        return ResponseEntity.ok(mensajeService.obtenerConversacion(email1, email2));</span>
+    }
+
+    @GetMapping(&quot;/inbox&quot;)
+    @Operation(summary = &quot;Obtener la bandeja de entrada (resumen de conversaciones) de un usuario&quot;)
+    public ResponseEntity&lt;List&lt;ConversacionDTO&gt;&gt; obtenerInbox(@RequestParam String email) {
+<span class="fc" id="L48">        return ResponseEntity.ok(mensajeService.obtenerInbox(email));</span>
+    }
+
+    @PatchMapping(&quot;/marcar-leidos&quot;)
+    @Operation(summary = &quot;Marcar como leídos todos los mensajes de un remitente hacia un destinatario&quot;)
+    public ResponseEntity&lt;Map&lt;String, Integer&gt;&gt; marcarComoLeidos(
+            @RequestParam String destinatario, @RequestParam String remitente) {
+<span class="fc" id="L55">        int actualizados = mensajeService.marcarComoLeidos(destinatario, remitente);</span>
+<span class="fc" id="L56">        return ResponseEntity.ok(Map.of(&quot;actualizados&quot;, actualizados));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

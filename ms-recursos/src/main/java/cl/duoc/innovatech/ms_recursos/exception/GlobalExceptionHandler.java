@@ -1,7 +1,9 @@
 package cl.duoc.innovatech.ms_recursos.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,16 @@ public class GlobalExceptionHandler {
         body.put("error", "Validación fallida");
         body.put("errores", errores);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleIntegrity(DataIntegrityViolationException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, "Datos inválidos o incompletos: revise los campos obligatorios");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleNotReadable(HttpMessageNotReadableException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, "JSON inválido o valor no permitido: revise el formato y los valores enviados");
     }
 
     @ExceptionHandler(Exception.class)

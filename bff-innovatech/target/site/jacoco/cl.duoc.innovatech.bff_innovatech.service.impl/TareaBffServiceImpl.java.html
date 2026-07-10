@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TareaBffServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.service.impl</a> &gt; <span class="el_source">TareaBffServiceImpl.java</span></div><h1>TareaBffServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.service.impl;
+
+import cl.duoc.innovatech.bff_innovatech.client.MsProyectosClient;
+import cl.duoc.innovatech.bff_innovatech.dto.request.TareaRequest;
+import cl.duoc.innovatech.bff_innovatech.dto.response.TareaResponse;
+import cl.duoc.innovatech.bff_innovatech.service.TareaBffService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Implementación del servicio BFF para tareas.
+ * Delega al cliente HTTP de ms-proyectos (mismo microservicio que gestiona proyectos).
+ */
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L19">@Slf4j</span>
+public class TareaBffServiceImpl implements TareaBffService {
+
+    private final MsProyectosClient msProyectosClient;
+
+    @Override
+    public List&lt;TareaResponse&gt; listarPorProyecto(Long proyectoId) {
+<span class="fc" id="L26">        log.info(&quot;BFF → ms-proyectos: listar tareas del proyecto id={}&quot;, proyectoId);</span>
+<span class="fc" id="L27">        return msProyectosClient.listarTareasPorProyecto(proyectoId);</span>
+    }
+
+    @Override
+    public TareaResponse obtenerPorId(Long id) {
+<span class="fc" id="L32">        log.info(&quot;BFF → ms-proyectos: obtener tarea id={}&quot;, id);</span>
+<span class="fc" id="L33">        return msProyectosClient.obtenerTareaPorId(id);</span>
+    }
+
+    @Override
+    public TareaResponse crear(TareaRequest request) {
+<span class="fc" id="L38">        log.info(&quot;BFF → ms-proyectos: crear tarea '{}'&quot;, request.getTitulo());</span>
+<span class="fc" id="L39">        return msProyectosClient.crearTarea(request);</span>
+    }
+
+    @Override
+    public TareaResponse actualizar(Long id, TareaRequest request) {
+<span class="fc" id="L44">        log.info(&quot;BFF → ms-proyectos: actualizar tarea id={}&quot;, id);</span>
+<span class="fc" id="L45">        return msProyectosClient.actualizarTarea(id, request);</span>
+    }
+
+    @Override
+    public void eliminar(Long id) {
+<span class="fc" id="L50">        log.info(&quot;BFF → ms-proyectos: eliminar tarea id={}&quot;, id);</span>
+<span class="fc" id="L51">        msProyectosClient.eliminarTarea(id);</span>
+<span class="fc" id="L52">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -17,6 +17,9 @@ const NAV = [
     { path: '/kpis', label: 'KPIs', icon: '📈' },
     { path: '/reportes', label: 'Reportes', icon: '📊' },
   ]},
+  { section: 'COMUNICACIÓN', items: [
+    { path: '/chat', label: 'Chat', icon: '💬' },
+  ]},
 ]
 
 export default function Sidebar({ bffOk }) {

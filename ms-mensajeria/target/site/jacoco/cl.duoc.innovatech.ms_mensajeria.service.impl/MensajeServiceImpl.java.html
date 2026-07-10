@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MensajeServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-mensajeria</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.ms_mensajeria.service.impl</a> &gt; <span class="el_source">MensajeServiceImpl.java</span></div><h1>MensajeServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.ms_mensajeria.service.impl;
+
+import cl.duoc.innovatech.ms_mensajeria.dto.ConversacionDTO;
+import cl.duoc.innovatech.ms_mensajeria.dto.MensajeDTO;
+import cl.duoc.innovatech.ms_mensajeria.exception.RecursoNoEncontradoException;
+import cl.duoc.innovatech.ms_mensajeria.model.Mensaje;
+import cl.duoc.innovatech.ms_mensajeria.repository.MensajeRepository;
+import cl.duoc.innovatech.ms_mensajeria.service.MensajeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class MensajeServiceImpl implements MensajeService {
+
+    private final MensajeRepository mensajeRepository;
+
+    @Override
+    public MensajeDTO enviar(MensajeDTO dto) {
+<span class="fc" id="L28">        Mensaje mensaje = Mensaje.builder()</span>
+<span class="fc" id="L29">                .remitenteEmail(dto.getRemitenteEmail())</span>
+<span class="fc" id="L30">                .remitenteNombre(dto.getRemitenteNombre())</span>
+<span class="fc" id="L31">                .destinatarioEmail(dto.getDestinatarioEmail())</span>
+<span class="fc" id="L32">                .destinatarioNombre(dto.getDestinatarioNombre())</span>
+<span class="fc" id="L33">                .contenido(dto.getContenido())</span>
+<span class="fc" id="L34">                .build();</span>
+<span class="fc" id="L35">        return toDTO(mensajeRepository.save(mensaje));</span>
+    }
+
+    @Override
+    public MensajeDTO obtenerPorId(Long id) {
+<span class="fc" id="L40">        return toDTO(mensajeRepository.findById(id)</span>
+<span class="fc" id="L41">                .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Mensaje no encontrado con id: &quot; + id)));</span>
+    }
+
+    @Override
+    public List&lt;MensajeDTO&gt; obtenerConversacion(String email1, String email2) {
+<span class="fc" id="L46">        return mensajeRepository.findConversacion(email1, email2).stream()</span>
+<span class="fc" id="L47">                .map(this::toDTO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;ConversacionDTO&gt; obtenerInbox(String email) {
+<span class="fc" id="L53">        List&lt;Mensaje&gt; mensajes = mensajeRepository</span>
+<span class="fc" id="L54">                .findByRemitenteEmailOrDestinatarioEmailOrderByFechaEnvioDesc(email, email);</span>
+
+<span class="fc" id="L56">        Map&lt;String, List&lt;Mensaje&gt;&gt; porContacto = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L57">        Map&lt;String, String&gt; nombrePorContacto = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (Mensaje m : mensajes) {</span>
+<span class="fc" id="L60">            boolean enviadoPorMi = m.getRemitenteEmail().equalsIgnoreCase(email);</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">            String contactoEmail = enviadoPorMi ? m.getDestinatarioEmail() : m.getRemitenteEmail();</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">            String contactoNombre = enviadoPorMi ? m.getDestinatarioNombre() : m.getRemitenteNombre();</span>
+<span class="fc" id="L63">            porContacto.computeIfAbsent(contactoEmail, k -&gt; new ArrayList&lt;&gt;()).add(m);</span>
+<span class="fc" id="L64">            nombrePorContacto.putIfAbsent(contactoEmail, contactoNombre);</span>
+        }
+
+<span class="fc" id="L67">        List&lt;ConversacionDTO&gt; resultado = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Map.Entry&lt;String, List&lt;Mensaje&gt;&gt; entry : porContacto.entrySet()) {</span>
+<span class="fc" id="L69">            String contacto = entry.getKey();</span>
+<span class="fc" id="L70">            List&lt;Mensaje&gt; hilo = entry.getValue();</span>
+<span class="fc" id="L71">            Mensaje ultimo = hilo.get(0);</span>
+<span class="fc" id="L72">            long noLeidos = hilo.stream()</span>
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">                    .filter(m -&gt; m.getDestinatarioEmail().equalsIgnoreCase(email) &amp;&amp; !Boolean.TRUE.equals(m.getLeido()))</span>
+<span class="fc" id="L74">                    .count();</span>
+<span class="fc" id="L75">            resultado.add(ConversacionDTO.builder()</span>
+<span class="fc" id="L76">                    .contactoEmail(contacto)</span>
+<span class="fc" id="L77">                    .contactoNombre(nombrePorContacto.get(contacto))</span>
+<span class="fc" id="L78">                    .ultimoMensaje(ultimo.getContenido())</span>
+<span class="fc" id="L79">                    .fechaUltimoMensaje(ultimo.getFechaEnvio())</span>
+<span class="fc" id="L80">                    .noLeidos(noLeidos)</span>
+<span class="fc" id="L81">                    .ultimoEnviadoPorMi(ultimo.getRemitenteEmail().equalsIgnoreCase(email))</span>
+<span class="fc" id="L82">                    .build());</span>
+        }
+<span class="fc" id="L84">        return resultado;</span>
+    }
+
+    @Override
+    @Transactional
+    public int marcarComoLeidos(String destinatarioEmail, String remitenteEmail) {
+<span class="fc" id="L90">        return mensajeRepository.marcarComoLeidos(destinatarioEmail, remitenteEmail);</span>
+    }
+
+    private MensajeDTO toDTO(Mensaje m) {
+<span class="fc" id="L94">        return MensajeDTO.builder()</span>
+<span class="fc" id="L95">                .id(m.getId())</span>
+<span class="fc" id="L96">                .remitenteEmail(m.getRemitenteEmail())</span>
+<span class="fc" id="L97">                .remitenteNombre(m.getRemitenteNombre())</span>
+<span class="fc" id="L98">                .destinatarioEmail(m.getDestinatarioEmail())</span>
+<span class="fc" id="L99">                .destinatarioNombre(m.getDestinatarioNombre())</span>
+<span class="fc" id="L100">                .contenido(m.getContenido())</span>
+<span class="fc" id="L101">                .fechaEnvio(m.getFechaEnvio())</span>
+<span class="fc" id="L102">                .leido(m.getLeido())</span>
+<span class="fc" id="L103">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

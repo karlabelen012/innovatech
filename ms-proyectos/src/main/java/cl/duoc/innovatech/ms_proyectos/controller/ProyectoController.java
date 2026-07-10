@@ -11,55 +11,66 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import cl.duoc.innovatech.ms_proyectos.model.Proyecto;
+import cl.duoc.innovatech.ms_proyectos.dto.ProyectoDTO;
 import cl.duoc.innovatech.ms_proyectos.service.ProyectoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/proyectos")
 @RequiredArgsConstructor
+@Tag(name = "Proyectos", description = "Gestión de proyectos de Innovatech Solutions")
 public class ProyectoController {
 
     private final ProyectoService proyectoService;
 
     @GetMapping
-    public ResponseEntity<List<Proyecto>> listar() {
+    @Operation(summary = "Listar proyectos",
+            description = "Sin parámetros retorna todos. Acepta filtro: ?estado=PENDIENTE | EN_PROGRESO | FINALIZADO")
+    public ResponseEntity<List<ProyectoDTO>> listar(
+            @Parameter(description = "Filtrar por estado: PENDIENTE, EN_PROGRESO, FINALIZADO")
+            @RequestParam(required = false) String estado) {
+        if (estado != null) {
+            return ResponseEntity.ok(proyectoService.listarPorEstado(estado));
+        }
         return ResponseEntity.ok(proyectoService.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Proyecto> obtenerPorId(@PathVariable Long id) {
-        return proyectoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Obtener proyecto por ID")
+    public ResponseEntity<ProyectoDTO> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(proyectoService.obtenerPorId(id));
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<Proyecto>> listarPorEstado(@PathVariable String estado) {
+    @Operation(summary = "Listar proyectos por estado (vía path variable)")
+    public ResponseEntity<List<ProyectoDTO>> listarPorEstado(@PathVariable String estado) {
         return ResponseEntity.ok(proyectoService.listarPorEstado(estado));
     }
 
     @PostMapping
-    public ResponseEntity<Proyecto> crear(@Valid @RequestBody Proyecto proyecto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(proyectoService.guardar(proyecto));
+    @Operation(summary = "Crear proyecto")
+    public ResponseEntity<ProyectoDTO> crear(@Valid @RequestBody ProyectoDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(proyectoService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Proyecto> actualizar(@PathVariable Long id,
-                                               @Valid @RequestBody Proyecto proyecto) {
-        return proyectoService.actualizar(id, proyecto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Operation(summary = "Actualizar proyecto")
+    public ResponseEntity<ProyectoDTO> actualizar(@PathVariable Long id,
+                                                   @Valid @RequestBody ProyectoDTO dto) {
+        return ResponseEntity.ok(proyectoService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar proyecto")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (proyectoService.eliminar(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        proyectoService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

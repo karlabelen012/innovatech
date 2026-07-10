@@ -7,6 +7,8 @@ import DashboardPage from './pages/DashboardPage.jsx'
 import ProyectosPage from './pages/ProyectosPage.jsx'
 import RecursosPage from './pages/RecursosPage.jsx'
 import KpisPage from './pages/KpisPage.jsx'
+import ChatPage from './pages/ChatPage.jsx'
+import ConfiguracionPage from './pages/ConfiguracionPage.jsx'
 import { PerfilPage, ClientesPage, EquiposPage, ReportesPage } from './pages/OtherPages.jsx'
 import ToastContainer from './atoms/Toast.jsx'
 
@@ -28,6 +30,8 @@ function AppRoutes() {
         <Route path="equipos" element={<EquiposPage />} />
         <Route path="kpis" element={<KpisPage />} />
         <Route path="reportes" element={<ReportesPage />} />
+        <Route path="chat" element={<ChatPage />} />
+        <Route path="configuracion" element={<ConfiguracionPage />} />
         <Route path="perfil" element={<PerfilPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
