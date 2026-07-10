@@ -75,6 +75,8 @@ spring.datasource.password=
 
 El servicio queda disponible en: `http://localhost:8083`
 
+> Al primer arranque, si las tablas `reportes_proyecto` y `kpi_metricas` están vacías, `AnaliticaDataSeeder` carga automáticamente 3 reportes de proyecto y 4 KPIs de ejemplo. Si ya hay datos, el seeder se omite.
+
 ---
 
 ## Documentación API (Swagger UI)
@@ -148,6 +150,12 @@ http://localhost:8083/api-docs
 }
 ```
 
+### Dashboard — `/api/v1/dashboard`
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/` | Resumen consolidado: totales de proyectos por estado, promedio de avance, KPIs por categoría y destacados |
+
 ---
 
 ## Pruebas unitarias
@@ -207,7 +215,7 @@ ms-analitica/
     ├── main/
     │   ├── java/cl/duoc/innovatech/ms_analitica/
     │   │   ├── MsAnaliticaApplication.java
-    │   │   ├── config/         SwaggerConfig.java
+    │   │   ├── config/         SwaggerConfig.java, AnaliticaDataSeeder.java
     │   │   ├── controller/     KpiMetricaController, ReporteProyectoController, DashboardController
     │   │   ├── dto/            KpiMetricaDTO, ReporteProyectoDTO, DashboardDTO
     │   │   ├── exception/      GlobalExceptionHandler, RecursoNoEncontradoException

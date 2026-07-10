@@ -36,13 +36,13 @@ public class MsMensajeriaClient {
     @Value(&quot;${ms.mensajeria.url}&quot;)
     private String baseUrl;
 
-<span class="fc" id="L39">    private static final String BASE_PATH = &quot;/api/v1/mensajes&quot;;</span>
+    private static final String BASE_PATH = &quot;/api/v1/mensajes&quot;;
 
     @CircuitBreaker(name = &quot;msMensajeria&quot;, fallbackMethod = &quot;enviarFallback&quot;)
     public MensajeResponse enviar(MensajeRequest request) {
 <span class="fc" id="L43">        HttpEntity&lt;MensajeRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L44">        ResponseEntity&lt;MensajeResponse&gt; resp = restTemplate.postForEntity(</span>
-<span class="fc" id="L45">                baseUrl + BASE_PATH, entity, MensajeResponse.class);</span>
+                baseUrl + BASE_PATH, entity, MensajeResponse.class);
 <span class="fc" id="L46">        return resp.getBody();</span>
     }
 

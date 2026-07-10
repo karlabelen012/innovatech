@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 <span class="fc" id="L28">@Slf4j</span>
 public class DashboardBffServiceImpl implements DashboardBffService {
 
-<span class="fc" id="L31">    private static final int MAX_PROYECTOS_RECIENTES = 5;</span>
+    private static final int MAX_PROYECTOS_RECIENTES = 5;
 
     private final MsAnaliticaClient msAnaliticaClient;
     private final MsProyectosClient msProyectosClient;
@@ -50,7 +50,7 @@ public class DashboardBffServiceImpl implements DashboardBffService {
 <span class="fc" id="L50">            aplicarEstadisticasDeProyectos(dashboard, msProyectosClient.listarProyectos());</span>
 <span class="fc" id="L51">        } catch (Exception ex) {</span>
 <span class="fc" id="L52">            log.warn(&quot;ms-proyectos no disponible, estadísticas de proyectos no actualizadas: {}&quot;, ex.getMessage());</span>
-        }
+<span class="fc" id="L53">        }</span>
 
         // 3. Enriquecer con resumen de recursos humanos
         try {
@@ -61,7 +61,7 @@ public class DashboardBffServiceImpl implements DashboardBffService {
 <span class="fc" id="L61">            dashboard.setAsignacionesActivas(resumenRR.getAsignacionesActivas());</span>
 <span class="fc" id="L62">        } catch (Exception ex) {</span>
 <span class="fc" id="L63">            log.warn(&quot;ms-recursos no disponible, dashboard parcial: {}&quot;, ex.getMessage());</span>
-        }
+<span class="fc" id="L64">        }</span>
 
 <span class="fc" id="L66">        return dashboard;</span>
     }

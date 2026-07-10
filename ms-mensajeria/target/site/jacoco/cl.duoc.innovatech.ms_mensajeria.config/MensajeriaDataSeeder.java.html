@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MensajeriaDataSeeder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-mensajeria</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.ms_mensajeria.config</a> &gt; <span class="el_source">MensajeriaDataSeeder.java</span></div><h1>MensajeriaDataSeeder.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.ms_mensajeria.config;
+
+import cl.duoc.innovatech.ms_mensajeria.model.Mensaje;
+import cl.duoc.innovatech.ms_mensajeria.repository.MensajeRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+<span class="fc" id="L15">@Slf4j</span>
+public class MensajeriaDataSeeder implements CommandLineRunner {
+
+    private final MensajeRepository mensajeRepository;
+
+    @Override
+    public void run(String... args) {
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        if (mensajeRepository.count() &gt; 0) {</span>
+<span class="fc" id="L23">            log.info(&quot;La base de datos de mensajería ya contiene datos. Se omite el seed.&quot;);</span>
+<span class="fc" id="L24">            return;</span>
+        }
+
+<span class="fc" id="L27">        List&lt;Mensaje&gt; mensajes = List.of(</span>
+<span class="fc" id="L28">                Mensaje.builder()</span>
+<span class="fc" id="L29">                        .remitenteEmail(&quot;karla@innovatech.cl&quot;)</span>
+<span class="fc" id="L30">                        .remitenteNombre(&quot;Karla Herrera&quot;)</span>
+<span class="fc" id="L31">                        .destinatarioEmail(&quot;bryan@innovatech.cl&quot;)</span>
+<span class="fc" id="L32">                        .destinatarioNombre(&quot;Bryan Muñoz&quot;)</span>
+<span class="fc" id="L33">                        .contenido(&quot;Hola Bryan, ¿cómo va el avance de la conciliación bancaria?&quot;)</span>
+<span class="fc" id="L34">                        .fechaEnvio(LocalDateTime.now().minusHours(5))</span>
+<span class="fc" id="L35">                        .leido(true)</span>
+<span class="fc" id="L36">                        .build(),</span>
+<span class="fc" id="L37">                Mensaje.builder()</span>
+<span class="fc" id="L38">                        .remitenteEmail(&quot;bryan@innovatech.cl&quot;)</span>
+<span class="fc" id="L39">                        .remitenteNombre(&quot;Bryan Muñoz&quot;)</span>
+<span class="fc" id="L40">                        .destinatarioEmail(&quot;karla@innovatech.cl&quot;)</span>
+<span class="fc" id="L41">                        .destinatarioNombre(&quot;Karla Herrera&quot;)</span>
+<span class="fc" id="L42">                        .contenido(&quot;Vamos avanzados, debería quedar lista para pruebas mañana.&quot;)</span>
+<span class="fc" id="L43">                        .fechaEnvio(LocalDateTime.now().minusHours(4).minusMinutes(45))</span>
+<span class="fc" id="L44">                        .leido(true)</span>
+<span class="fc" id="L45">                        .build(),</span>
+<span class="fc" id="L46">                Mensaje.builder()</span>
+<span class="fc" id="L47">                        .remitenteEmail(&quot;karla@innovatech.cl&quot;)</span>
+<span class="fc" id="L48">                        .remitenteNombre(&quot;Karla Herrera&quot;)</span>
+<span class="fc" id="L49">                        .destinatarioEmail(&quot;bryan@innovatech.cl&quot;)</span>
+<span class="fc" id="L50">                        .destinatarioNombre(&quot;Bryan Muñoz&quot;)</span>
+<span class="fc" id="L51">                        .contenido(&quot;Perfecto, avísame cuando esté lista para revisarla.&quot;)</span>
+<span class="fc" id="L52">                        .fechaEnvio(LocalDateTime.now().minusHours(4).minusMinutes(30))</span>
+<span class="fc" id="L53">                        .leido(false)</span>
+<span class="fc" id="L54">                        .build(),</span>
+<span class="fc" id="L55">                Mensaje.builder()</span>
+<span class="fc" id="L56">                        .remitenteEmail(&quot;carlos@innovatech.cl&quot;)</span>
+<span class="fc" id="L57">                        .remitenteNombre(&quot;Carlos Soto&quot;)</span>
+<span class="fc" id="L58">                        .destinatarioEmail(&quot;karla@innovatech.cl&quot;)</span>
+<span class="fc" id="L59">                        .destinatarioNombre(&quot;Karla Herrera&quot;)</span>
+<span class="fc" id="L60">                        .contenido(&quot;Karla, ya levanté el inventario de servidores para la migración cloud.&quot;)</span>
+<span class="fc" id="L61">                        .fechaEnvio(LocalDateTime.now().minusHours(3))</span>
+<span class="fc" id="L62">                        .leido(true)</span>
+<span class="fc" id="L63">                        .build(),</span>
+<span class="fc" id="L64">                Mensaje.builder()</span>
+<span class="fc" id="L65">                        .remitenteEmail(&quot;karla@innovatech.cl&quot;)</span>
+<span class="fc" id="L66">                        .remitenteNombre(&quot;Karla Herrera&quot;)</span>
+<span class="fc" id="L67">                        .destinatarioEmail(&quot;carlos@innovatech.cl&quot;)</span>
+<span class="fc" id="L68">                        .destinatarioNombre(&quot;Carlos Soto&quot;)</span>
+<span class="fc" id="L69">                        .contenido(&quot;Genial, agenda una reunión esta semana para revisarlo juntos.&quot;)</span>
+<span class="fc" id="L70">                        .fechaEnvio(LocalDateTime.now().minusHours(2).minusMinutes(50))</span>
+<span class="fc" id="L71">                        .leido(false)</span>
+<span class="fc" id="L72">                        .build(),</span>
+<span class="fc" id="L73">                Mensaje.builder()</span>
+<span class="fc" id="L74">                        .remitenteEmail(&quot;carlos@innovatech.cl&quot;)</span>
+<span class="fc" id="L75">                        .remitenteNombre(&quot;Carlos Soto&quot;)</span>
+<span class="fc" id="L76">                        .destinatarioEmail(&quot;bryan@innovatech.cl&quot;)</span>
+<span class="fc" id="L77">                        .destinatarioNombre(&quot;Bryan Muñoz&quot;)</span>
+<span class="fc" id="L78">                        .contenido(&quot;Bryan, ¿tienes disponibilidad para apoyar en la migración la próxima semana?&quot;)</span>
+<span class="fc" id="L79">                        .fechaEnvio(LocalDateTime.now().minusMinutes(45))</span>
+<span class="fc" id="L80">                        .leido(false)</span>
+<span class="fc" id="L81">                        .build()</span>
+        );
+
+<span class="fc" id="L84">        mensajeRepository.saveAll(mensajes);</span>
+<span class="fc" id="L85">        log.info(&quot;Seed de mensajería creado: {} mensajes.&quot;, mensajes.size());</span>
+<span class="fc" id="L86">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

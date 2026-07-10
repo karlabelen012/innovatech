@@ -62,7 +62,7 @@ public class MensajeServiceImpl implements MensajeService {
 <span class="pc bpc" id="L62" title="1 of 2 branches missed.">            String contactoNombre = enviadoPorMi ? m.getDestinatarioNombre() : m.getRemitenteNombre();</span>
 <span class="fc" id="L63">            porContacto.computeIfAbsent(contactoEmail, k -&gt; new ArrayList&lt;&gt;()).add(m);</span>
 <span class="fc" id="L64">            nombrePorContacto.putIfAbsent(contactoEmail, contactoNombre);</span>
-        }
+<span class="fc" id="L65">        }</span>
 
 <span class="fc" id="L67">        List&lt;ConversacionDTO&gt; resultado = new ArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Map.Entry&lt;String, List&lt;Mensaje&gt;&gt; entry : porContacto.entrySet()) {</span>
@@ -80,7 +80,7 @@ public class MensajeServiceImpl implements MensajeService {
 <span class="fc" id="L80">                    .noLeidos(noLeidos)</span>
 <span class="fc" id="L81">                    .ultimoEnviadoPorMi(ultimo.getRemitenteEmail().equalsIgnoreCase(email))</span>
 <span class="fc" id="L82">                    .build());</span>
-        }
+<span class="fc" id="L83">        }</span>
 <span class="fc" id="L84">        return resultado;</span>
     }
 

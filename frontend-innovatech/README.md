@@ -14,18 +14,23 @@ src/
 ├── atoms/          # Btn, Badge, Spinner, Input, Select, Modal, Avatar, Card, ProgressBar, Toast
 ├── molecules/      # Sidebar, TopBar
 ├── organisms/      # AppLayout
-├── pages/          # LoginPage, DashboardPage, ProyectosPage, RecursosPage, KpisPage, OtherPages
+├── pages/          # LoginPage, DashboardPage, ProyectosPage, RecursosPage, KpisPage, ChatPage, ConfiguracionPage, OtherPages
 ├── services/       # api.js → todas las llamadas al BFF
 ├── context/        # AuthContext, NotifContext
-└── utils/          # (helpers)
+├── hooks/          # usePolling
+└── utils/          # prefs.js (preferencias de refresco)
 ```
 
 ## Instalación y ejecución
+
+> Para levantar todo el stack (MySQL + 4 microservicios + BFF + frontend) con Docker, ver la guía en el [README raíz del monorepo](../README.md#guía-de-instalación-y-ejecución).
 
 ```bash
 npm install
 npm run dev        # inicia en http://localhost:5173
 ```
+
+> Requiere que el BFF (`localhost:8080`) y los cuatro microservicios estén corriendo. Si el BFF no responde, el Dashboard cae a datos de ejemplo con un aviso visual.
 
 ## Credenciales de prueba
 
@@ -64,7 +69,12 @@ npm run dev        # inicia en http://localhost:5173
 - RadarChart general
 - Cards individuales por KPI
 
-### Perfil
+### Chat interno
+- Lista de contactos del equipo con contador de no leídos
+- Historial de conversación por contacto, con marcado automático de leído
+- Envío de mensajes en tiempo real (polling)
+
+### Perfil / Configuración
 - Ver y editar nombre, apellido, email, rol
 - Persiste en sessionStorage
 
@@ -76,15 +86,16 @@ npm run dev        # inicia en http://localhost:5173
 
 ## Conexión con Backend
 
-El frontend apunta al BFF en `http://localhost:8080/api/bff`.
+El frontend apunta al BFF en `http://localhost:8080/api/bff` (y a `http://localhost:8080/api/auth` para el login). Todas las peticiones a `/api/bff/**` llevan el JWT en el header `Authorization`.
 
-Si el BFF no está disponible, el Dashboard muestra datos de ejemplo con un aviso de warning. Las demás páginas mostrarán errores via toast.
+Si el BFF no está disponible, el Dashboard muestra datos de ejemplo con un aviso de warning. Las demás páginas mostrarán errores vía toast.
 
-Microservicios requeridos:
-- BFF:        `localhost:8080`
-- MS Proyectos: `localhost:8081`
-- MS Recursos:  `localhost:8082`
-- MS Analítica: `localhost:8083`
+Servicios requeridos:
+- BFF:           `localhost:8080`
+- MS Proyectos:  `localhost:8081`
+- MS Analítica:  `localhost:8083`
+- MS Recursos:   `localhost:8084`
+- MS Mensajería: `localhost:8085`
 
 ## Pruebas
 

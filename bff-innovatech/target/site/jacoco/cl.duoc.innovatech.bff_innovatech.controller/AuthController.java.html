@@ -34,7 +34,7 @@ public class AuthController {
 <span class="fc" id="L34">                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));</span>
 <span class="fc" id="L35">        } catch (AuthenticationException ex) {</span>
 <span class="fc" id="L36">            throw new BadCredentialsException(&quot;Credenciales inválidas&quot;);</span>
-        }
+<span class="fc" id="L37">        }</span>
 <span class="fc" id="L38">        String token = jwtService.generateToken(request.getEmail());</span>
 <span class="fc" id="L39">        return ResponseEntity.ok(new LoginResponse(token, request.getEmail()));</span>
     }

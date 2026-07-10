@@ -1,5 +1,8 @@
+cl\duoc\innovatech\bff_innovatech\client\MsMensajeriaClient$2.class
 cl\duoc\innovatech\bff_innovatech\dto\response\ResumenRecursosResponse$ResumenRecursosResponseBuilder.class
+cl\duoc\innovatech\bff_innovatech\client\MsMensajeriaClient.class
 cl\duoc\innovatech\bff_innovatech\dto\response\EmpleadoResponse.class
+cl\duoc\innovatech\bff_innovatech\client\MsProyectosClient$3.class
 cl\duoc\innovatech\bff_innovatech\dto\response\DashboardResponse$DashboardResponseBuilder.class
 cl\duoc\innovatech\bff_innovatech\config\SwaggerConfig.class
 cl\duoc\innovatech\bff_innovatech\service\impl\ProyectoBffServiceImpl.class
@@ -30,11 +33,13 @@ cl\duoc\innovatech\bff_innovatech\controller\DashboardBffController.class
 cl\duoc\innovatech\bff_innovatech\dto\response\EmpleadoResponse$EmpleadoResponseBuilder.class
 cl\duoc\innovatech\bff_innovatech\config\CorsConfig.class
 cl\duoc\innovatech\bff_innovatech\dto\response\AsignacionResponse$AsignacionResponseBuilder.class
+cl\duoc\innovatech\bff_innovatech\client\MsMensajeriaClient$3.class
 cl\duoc\innovatech\bff_innovatech\config\RestTemplateConfig.class
 cl\duoc\innovatech\bff_innovatech\service\impl\RecursosBffServiceImpl.class
 cl\duoc\innovatech\bff_innovatech\dto\request\EmpleadoRequest$EmpleadoRequestBuilder.class
 cl\duoc\innovatech\bff_innovatech\dto\response\ResumenRecursosResponse.class
 cl\duoc\innovatech\bff_innovatech\client\MsProyectosClient$2.class
+cl\duoc\innovatech\bff_innovatech\client\MsMensajeriaClient$1.class
 cl\duoc\innovatech\bff_innovatech\service\RecursosBffService.class
 cl\duoc\innovatech\bff_innovatech\config\CorsConfig$1.class
 cl\duoc\innovatech\bff_innovatech\service\DashboardBffService.class

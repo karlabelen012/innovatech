@@ -18,8 +18,6 @@ La solución se construyó sobre una **arquitectura de microservicios** con un B
 
 ## Arquitectura general
 
-<img width="2000" height="2000" alt="diagrama_innovatech" src="https://github.com/user-attachments/assets/9527cd1c-e4f1-401e-a4af-ec1e3c7ee3ab" />
-
 ```
 NAVEGADOR
    │
@@ -175,6 +173,24 @@ Las 4 bases de datos se crean automáticamente al levantar cada servicio. Para b
 
 > Nota: si ya tienes un MySQL corriendo en el host en el puerto 3306, el `docker-compose.yml` publica el MySQL del contenedor en el **3307** para no chocar — no afecta a los servicios, que se comunican entre sí por la red interna de Docker.
 
+#### Verificación rápida
+
+```bash
+docker compose ps                     # los 7 contenedores deben quedar "Up"/"healthy"
+curl http://localhost:8080/api/bff/dashboard \
+  -H "Authorization: Bearer $(curl -s -X POST http://localhost:8080/api/auth/login \
+      -H 'Content-Type: application/json' \
+      -d '{"email":"karla@innovatech.cl","password":"1234"}' | grep -o '\"token\":\"[^\"]*\"' | cut -d'\"' -f4)"
+```
+
+Si responde con JSON (totales de proyectos, KPIs, etc.), el stack quedó arriba correctamente.
+
+### Datos de ejemplo (seed automático)
+
+Cada microservicio incluye un `CommandLineRunner` (`*DataSeeder`) que, **solo si su base de datos está vacía**, carga datos de ejemplo al arrancar: 3 proyectos con tareas (`ms-proyectos`), 3 empleados con asignaciones (`ms-recursos`), 3 reportes de proyecto y 4 KPIs (`ms-analitica`), y una conversación de ejemplo entre los 3 empleados (`ms-mensajeria`). Si la base ya tiene datos (por ejecuciones previas), el seeder se omite y no duplica nada — se puede ver el mensaje correspondiente (`Seed ... creado` u `... omite el seed`) en el log de cada servicio al iniciar.
+
+Para forzar un reseed completo desde cero: `docker compose down -v` (borra los volúmenes de MySQL) y luego `docker compose up -d` de nuevo.
+
 ### Opción B — Manual (sin Docker)
 
 #### Prerrequisitos
@@ -310,13 +326,15 @@ El login es real: el frontend llama a `POST /api/auth/login` en el BFF, que vali
 
 | Servicio | Tests | Cobertura de líneas | Umbral mínimo |
 |---|---|---|---|
-| **bff-innovatech** | 117 | 89.8% | 60% ✅ |
+| **bff-innovatech** | 118 | 90.3% | 60% ✅ |
 | **ms-analitica** | 48 | 69.1% | 60% ✅ |
-| **ms-proyectos** | 36 | 85.1% | 60% ✅ |
-| **ms-recursos** | 44 | 87.2% | 60% ✅ |
-| **ms-mensajeria** | 13 | 78.7% | 60% ✅ |
-| **Total backend** | **258 tests, 0 fallos** | | |
+| **ms-proyectos** | 38 | 85.6% | 60% ✅ |
+| **ms-recursos** | 45 | 89.7% | 60% ✅ |
+| **ms-mensajeria** | 15 | 81.2% | 60% ✅ |
+| **Total backend** | **264 tests, 0 fallos** | | |
 | **Frontend (Vitest)** | 56 tests, 0 fallos | 81.2% statements / 77.6% branch | — |
+
+> Cifras verificadas ejecutando `./mvnw test jacoco:report` en cada servicio y `npx vitest run` en el frontend.
 
 ### Ejecutar pruebas y generar reporte de cobertura
 

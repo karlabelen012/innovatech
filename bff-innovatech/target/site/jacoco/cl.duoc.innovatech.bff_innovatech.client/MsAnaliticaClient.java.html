@@ -32,7 +32,7 @@ public class MsAnaliticaClient {
 
     private static final String DASH = &quot;/api/v1/dashboard&quot;;
     private static final String KPI  = &quot;/api/v1/kpis&quot;;
-<span class="fc" id="L35">    private static final String KPI_CATEGORIA = &quot;/api/v1/kpis/categoria/&quot;;</span>
+    private static final String KPI_CATEGORIA = &quot;/api/v1/kpis/categoria/&quot;;
 
     @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;obtenerDashboardFallback&quot;)
     public DashboardResponse obtenerDashboard() {
@@ -47,7 +47,7 @@ public class MsAnaliticaClient {
     @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;listarKpisFallback&quot;)
     public List&lt;KpiMetricaResponse&gt; listarKpis() {
 <span class="fc" id="L49">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
-<span class="fc" id="L50">                baseUrl + KPI, HttpMethod.GET, null,</span>
+                baseUrl + KPI, HttpMethod.GET, null,
 <span class="fc" id="L51">                new ParameterizedTypeReference&lt;&gt;() {});</span>
 <span class="fc" id="L52">        return resp.getBody();</span>
     }
@@ -59,8 +59,8 @@ public class MsAnaliticaClient {
     @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;listarKpisPorCategoriaFallback&quot;)
     public List&lt;KpiMetricaResponse&gt; listarKpisPorCategoria(String categoria) {
 <span class="fc" id="L61">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
-<span class="fc" id="L62">                baseUrl + KPI_CATEGORIA + categoria,</span>
-<span class="fc" id="L63">                HttpMethod.GET, null,</span>
+                baseUrl + KPI_CATEGORIA + categoria,
+                HttpMethod.GET, null,
 <span class="fc" id="L64">                new ParameterizedTypeReference&lt;&gt;() {});</span>
 <span class="fc" id="L65">        return resp.getBody();</span>
     }

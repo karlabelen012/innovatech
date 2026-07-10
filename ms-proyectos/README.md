@@ -74,6 +74,8 @@ spring.datasource.password=
 
 El servicio queda disponible en: `http://localhost:8081`
 
+> Al primer arranque, si las tablas `proyectos` y `tareas` están vacías, `ProyectosDataSeeder` carga automáticamente 3 proyectos de ejemplo con sus tareas. Si ya hay datos, el seeder se omite.
+
 ---
 
 ## Endpoints principales
@@ -88,6 +90,16 @@ El servicio queda disponible en: `http://localhost:8081`
 | `POST` | `/` | Crear nuevo proyecto |
 | `PUT` | `/{id}` | Actualizar proyecto existente |
 | `DELETE` | `/{id}` | Eliminar proyecto |
+
+### Tareas — `/api/v1/tareas`
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/proyecto/{proyectoId}` | Listar tareas de un proyecto |
+| `GET` | `/{id}` | Obtener tarea por ID |
+| `POST` | `/` | Crear nueva tarea |
+| `PUT` | `/{id}` | Actualizar tarea existente |
+| `DELETE` | `/{id}` | Eliminar tarea |
 
 #### Ejemplo — Crear proyecto (`POST /api/v1/proyectos`)
 
@@ -140,11 +152,16 @@ target/site/jacoco/index.html
 ```
 src/test/java/cl/duoc/innovatech/ms_proyectos/
 ├── service/
-│   ├── ProyectoServiceTest.java    # 9 pruebas unitarias
-│   └── TareaServiceTest.java       # 9 pruebas unitarias
+│   ├── ProyectoServiceTest.java       # 9 pruebas unitarias
+│   └── TareaServiceTest.java          # 9 pruebas unitarias
+├── controller/
+│   ├── ProyectoControllerTest.java    # 10 pruebas con MockMvc
+│   └── TareaControllerTest.java       # 8 pruebas con MockMvc
+└── config/
+    └── ProyectosDataSeederTest.java   # 2 pruebas unitarias del seed inicial
 ```
 
-**Total: 18 pruebas · Cobertura objetivo: ≥ 60%**
+**Total: 38 pruebas · Cobertura: 85.6%**
 
 ---
 
@@ -170,14 +187,17 @@ ms-proyectos/
     ├── main/
     │   ├── java/cl/duoc/innovatech/ms_proyectos/
     │   │   ├── MsProyectosApplication.java
-    │   │   ├── controller/     ProyectoController.java
+    │   │   ├── config/         SwaggerConfig.java, ProyectosDataSeeder.java
+    │   │   ├── controller/     ProyectoController.java, TareaController.java
+    │   │   ├── dto/            ProyectoDTO.java, TareaDTO.java
+    │   │   ├── exception/      GlobalExceptionHandler.java, RecursoNoEncontradoException.java
     │   │   ├── model/          Proyecto.java, Tarea.java
     │   │   ├── repository/     ProyectoRepository.java, TareaRepository.java
-    │   │   └── service/        ProyectoService.java, TareaService.java
+    │   │   └── service/        ProyectoService.java, TareaService.java + impl/
     │   └── resources/
     │       └── application.properties
     └── test/
-        └── java/...            (18 pruebas)
+        └── java/...            (38 pruebas)
 ```
 
 ---

@@ -65,7 +65,7 @@ Ajustar credenciales en `src/main/resources/application.properties`:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/ms_recursos_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
 spring.datasource.username=root
-spring.datasource.password=root
+spring.datasource.password=
 ```
 
 ### 3. Compilar el proyecto
@@ -80,7 +80,9 @@ mvn clean install -DskipTests
 mvn spring-boot:run
 ```
 
-El servicio queda disponible en: `http://localhost:8082`
+El servicio queda disponible en: `http://localhost:8084`
+
+> Al primer arranque, si las tablas `empleados` y `asignaciones` están vacías, `RecursosDataSeeder` carga automáticamente 3 empleados de ejemplo y sus asignaciones. Si ya hay datos, el seeder se omite.
 
 ---
 
@@ -89,12 +91,12 @@ El servicio queda disponible en: `http://localhost:8082`
 Una vez iniciado el servicio, acceder a:
 
 ```
-http://localhost:8082/swagger-ui.html
+http://localhost:8084/swagger-ui.html
 ```
 
 Especificación OpenAPI en JSON:
 ```
-http://localhost:8082/api-docs
+http://localhost:8084/api-docs
 ```
 
 ---
@@ -155,17 +157,19 @@ target/site/jacoco/index.html
 
 ```
 src/test/java/cl/duoc/innovatech/ms_recursos/
-├── MsRecursosApplicationTests.java        # Carga del contexto
+├── MsRecursosApplicationTests.java        # 1 prueba de contexto
 ├── service/
 │   ├── EmpleadoServiceTest.java           # 14 pruebas unitarias
 │   └── AsignacionServiceTest.java         # 12 pruebas unitarias
 ├── controller/
-│   └── EmpleadoControllerTest.java        # 8 pruebas con MockMvc
-└── repository/
-    └── EmpleadoRepositoryTest.java        # 7 pruebas de integración con H2
+│   └── EmpleadoControllerTest.java        # 10 pruebas con MockMvc
+├── repository/
+│   └── EmpleadoRepositoryTest.java        # 7 pruebas de integración con H2
+└── config/
+    └── RecursosDataSeederTest.java        # 1 prueba unitaria del seed inicial
 ```
 
-**Total: 42 pruebas · Cobertura objetivo: ≥ 60%**
+**Total: 45 pruebas · Cobertura objetivo: ≥ 60%**
 
 ---
 
@@ -193,7 +197,7 @@ ms-recursos/
     ├── main/
     │   ├── java/cl/duoc/innovatech/ms_recursos/
     │   │   ├── MsRecursosApplication.java
-    │   │   ├── config/         SwaggerConfig.java
+    │   │   ├── config/         SwaggerConfig.java, RecursosDataSeeder.java
     │   │   ├── controller/     EmpleadoController, AsignacionController
     │   │   ├── dto/            EmpleadoDTO, AsignacionDTO, DisponibilidadDTO, ResumenRecursosDTO
     │   │   ├── exception/      GlobalExceptionHandler, excepciones custom
@@ -204,13 +208,13 @@ ms-recursos/
     │       ├── application.properties
     │       └── application-test.properties
     └── test/
-        └── java/...            (42 pruebas)
+        └── java/...            (45 pruebas)
 ```
 
 ---
 
 ## Puerto y comunicación
 
-- **Puerto:** `8082`
-- El BFF (`bff-innovatech`) consume este servicio en `http://localhost:8082`
+- **Puerto:** `8084`
+- El BFF (`bff-innovatech`) consume este servicio en `http://localhost:8084`
 - **CORS:** habilitado para todos los orígenes (`@CrossOrigin(origins = "*")`)
