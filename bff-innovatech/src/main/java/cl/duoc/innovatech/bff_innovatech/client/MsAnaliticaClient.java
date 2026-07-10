@@ -32,6 +32,7 @@ public class MsAnaliticaClient {
 
     private static final String DASH = "/api/v1/dashboard";
     private static final String KPI  = "/api/v1/kpis";
+    private static final String KPI_CATEGORIA = "/api/v1/kpis/categoria/";
 
     @CircuitBreaker(name = "msAnalitica", fallbackMethod = "obtenerDashboardFallback")
     public DashboardResponse obtenerDashboard() {
@@ -58,7 +59,7 @@ public class MsAnaliticaClient {
     @CircuitBreaker(name = "msAnalitica", fallbackMethod = "listarKpisPorCategoriaFallback")
     public List<KpiMetricaResponse> listarKpisPorCategoria(String categoria) {
         ResponseEntity<List<KpiMetricaResponse>> resp = restTemplate.exchange(
-                baseUrl + KPI + "?categoria=" + categoria,
+                baseUrl + KPI_CATEGORIA + categoria,
                 HttpMethod.GET, null,
                 new ParameterizedTypeReference<>() {});
         return resp.getBody();

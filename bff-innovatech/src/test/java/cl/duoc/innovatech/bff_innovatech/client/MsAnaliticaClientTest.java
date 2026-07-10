@@ -58,10 +58,10 @@ class MsAnaliticaClientTest {
     }
 
     @Test
-    @DisplayName("listarKpisPorCategoria() - filtra por query param")
+    @DisplayName("listarKpisPorCategoria() - consulta la ruta por categoría")
     void listarKpisPorCategoria_retornaFiltrados() {
         KpiMetricaResponse kpi = KpiMetricaResponse.builder().id(1L).categoria("RECURSOS").build();
-        when(restTemplate.exchange(eq("http://localhost:8083/api/v1/kpis?categoria=RECURSOS"), eq(HttpMethod.GET),
+        when(restTemplate.exchange(eq("http://localhost:8083/api/v1/kpis/categoria/RECURSOS"), eq(HttpMethod.GET),
                 any(), any(ParameterizedTypeReference.class)))
                 .thenReturn(ResponseEntity.ok(List.of(kpi)));
 
