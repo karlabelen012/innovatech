@@ -39,14 +39,14 @@ public class MsProyectosClient {
     private String baseUrl;
 
     private static final String BASE_PATH = &quot;/api/v1/proyectos&quot;;
-    private static final String TAREAS_PATH = &quot;/api/v1/tareas&quot;;
+<span class="fc" id="L42">    private static final String TAREAS_PATH = &quot;/api/v1/tareas&quot;;</span>
 
     @CircuitBreaker(name = &quot;msProyectos&quot;, fallbackMethod = &quot;listarProyectosFallback&quot;)
     public List&lt;ProyectoResponse&gt; listarProyectos() {
 <span class="fc" id="L46">        log.debug(&quot;GET {}{}&quot;, baseUrl, BASE_PATH);</span>
 <span class="fc" id="L47">        ResponseEntity&lt;List&lt;ProyectoResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                baseUrl + BASE_PATH,
-                HttpMethod.GET, null,
+<span class="fc" id="L48">                baseUrl + BASE_PATH,</span>
+<span class="fc" id="L49">                HttpMethod.GET, null,</span>
 <span class="fc" id="L50">                new ParameterizedTypeReference&lt;&gt;() {});</span>
 <span class="fc" id="L51">        return resp.getBody();</span>
     }
@@ -76,7 +76,7 @@ public class MsProyectosClient {
     public ProyectoResponse crearProyecto(ProyectoRequest request) {
 <span class="fc" id="L77">        HttpEntity&lt;ProyectoRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L78">        ResponseEntity&lt;ProyectoResponse&gt; resp = restTemplate.postForEntity(</span>
-                baseUrl + BASE_PATH, entity, ProyectoResponse.class);
+<span class="fc" id="L79">                baseUrl + BASE_PATH, entity, ProyectoResponse.class);</span>
 <span class="fc" id="L80">        return resp.getBody();</span>
     }
 
@@ -89,8 +89,8 @@ public class MsProyectosClient {
         try {
 <span class="fc" id="L90">            HttpEntity&lt;ProyectoRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L91">            ResponseEntity&lt;ProyectoResponse&gt; resp = restTemplate.exchange(</span>
-                    baseUrl + BASE_PATH + &quot;/&quot; + id,
-                    HttpMethod.PUT, entity, ProyectoResponse.class);
+<span class="fc" id="L92">                    baseUrl + BASE_PATH + &quot;/&quot; + id,</span>
+<span class="fc" id="L93">                    HttpMethod.PUT, entity, ProyectoResponse.class);</span>
 <span class="fc" id="L94">            return resp.getBody();</span>
 <span class="fc" id="L95">        } catch (HttpClientErrorException.NotFound ex) {</span>
 <span class="fc" id="L96">            throw new RecursoNoEncontradoException(&quot;Proyecto no encontrado: &quot; + id);</span>
@@ -111,7 +111,7 @@ public class MsProyectosClient {
 <span class="fc" id="L111">            restTemplate.delete(baseUrl + BASE_PATH + &quot;/&quot; + id);</span>
 <span class="fc" id="L112">        } catch (HttpClientErrorException.NotFound ex) {</span>
 <span class="fc" id="L113">            throw new RecursoNoEncontradoException(&quot;Proyecto no encontrado: &quot; + id);</span>
-<span class="fc" id="L114">        }</span>
+        }
 <span class="fc" id="L115">    }</span>
 
     private void eliminarProyectoFallback(Long id, RecursoNoEncontradoException ex) {
@@ -125,8 +125,8 @@ public class MsProyectosClient {
     @CircuitBreaker(name = &quot;msProyectos&quot;, fallbackMethod = &quot;listarPorEstadoFallback&quot;)
     public List&lt;ProyectoResponse&gt; listarPorEstado(String estado) {
 <span class="fc" id="L127">        ResponseEntity&lt;List&lt;ProyectoResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                baseUrl + BASE_PATH + &quot;?estado=&quot; + estado,
-                HttpMethod.GET, null,
+<span class="fc" id="L128">                baseUrl + BASE_PATH + &quot;?estado=&quot; + estado,</span>
+<span class="fc" id="L129">                HttpMethod.GET, null,</span>
 <span class="fc" id="L130">                new ParameterizedTypeReference&lt;&gt;() {});</span>
 <span class="fc" id="L131">        return resp.getBody();</span>
     }
@@ -140,8 +140,8 @@ public class MsProyectosClient {
     @CircuitBreaker(name = &quot;msProyectos&quot;, fallbackMethod = &quot;listarTareasPorProyectoFallback&quot;)
     public List&lt;TareaResponse&gt; listarTareasPorProyecto(Long proyectoId) {
 <span class="fc" id="L142">        ResponseEntity&lt;List&lt;TareaResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                baseUrl + TAREAS_PATH + &quot;/proyecto/&quot; + proyectoId,
-                HttpMethod.GET, null,
+<span class="fc" id="L143">                baseUrl + TAREAS_PATH + &quot;/proyecto/&quot; + proyectoId,</span>
+<span class="fc" id="L144">                HttpMethod.GET, null,</span>
 <span class="fc" id="L145">                new ParameterizedTypeReference&lt;&gt;() {});</span>
 <span class="fc" id="L146">        return resp.getBody();</span>
     }
@@ -171,7 +171,7 @@ public class MsProyectosClient {
     public TareaResponse crearTarea(TareaRequest request) {
 <span class="fc" id="L172">        HttpEntity&lt;TareaRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L173">        ResponseEntity&lt;TareaResponse&gt; resp = restTemplate.postForEntity(</span>
-                baseUrl + TAREAS_PATH, entity, TareaResponse.class);
+<span class="fc" id="L174">                baseUrl + TAREAS_PATH, entity, TareaResponse.class);</span>
 <span class="fc" id="L175">        return resp.getBody();</span>
     }
 
@@ -184,8 +184,8 @@ public class MsProyectosClient {
         try {
 <span class="fc" id="L185">            HttpEntity&lt;TareaRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L186">            ResponseEntity&lt;TareaResponse&gt; resp = restTemplate.exchange(</span>
-                    baseUrl + TAREAS_PATH + &quot;/&quot; + id,
-                    HttpMethod.PUT, entity, TareaResponse.class);
+<span class="fc" id="L187">                    baseUrl + TAREAS_PATH + &quot;/&quot; + id,</span>
+<span class="fc" id="L188">                    HttpMethod.PUT, entity, TareaResponse.class);</span>
 <span class="fc" id="L189">            return resp.getBody();</span>
 <span class="fc" id="L190">        } catch (HttpClientErrorException.NotFound ex) {</span>
 <span class="fc" id="L191">            throw new RecursoNoEncontradoException(&quot;Tarea no encontrada: &quot; + id);</span>
@@ -206,7 +206,7 @@ public class MsProyectosClient {
 <span class="fc" id="L206">            restTemplate.delete(baseUrl + TAREAS_PATH + &quot;/&quot; + id);</span>
 <span class="fc" id="L207">        } catch (HttpClientErrorException.NotFound ex) {</span>
 <span class="fc" id="L208">            throw new RecursoNoEncontradoException(&quot;Tarea no encontrada: &quot; + id);</span>
-<span class="fc" id="L209">        }</span>
+        }
 <span class="fc" id="L210">    }</span>
 
     private void eliminarTareaFallback(Long id, RecursoNoEncontradoException ex) {

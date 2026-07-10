@@ -1,71 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DashboardBffServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bff-innovatech</a> &gt; <a href="index.source.html" class="el_package">cl.duoc.innovatech.bff_innovatech.service.impl</a> &gt; <span class="el_source">DashboardBffServiceImpl.java</span></div><h1>DashboardBffServiceImpl.java</h1><pre class="source lang-java linenums">package cl.duoc.innovatech.bff_innovatech.service.impl;
 
 import cl.duoc.innovatech.bff_innovatech.client.MsAnaliticaClient;
+import cl.duoc.innovatech.bff_innovatech.client.MsProyectosClient;
 import cl.duoc.innovatech.bff_innovatech.client.MsRecursosClient;
 import cl.duoc.innovatech.bff_innovatech.dto.response.DashboardResponse;
 import cl.duoc.innovatech.bff_innovatech.dto.response.KpiMetricaResponse;
+import cl.duoc.innovatech.bff_innovatech.dto.response.ProyectoResponse;
 import cl.duoc.innovatech.bff_innovatech.dto.response.ResumenRecursosResponse;
 import cl.duoc.innovatech.bff_innovatech.service.DashboardBffService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Servicio BFF del Dashboard consolidado.
- * Combina datos de ms-analitica y ms-recursos en un único DTO
+ * Combina datos de ms-analitica, ms-proyectos y ms-recursos en un único DTO
  * para reducir el número de llamadas HTTP desde el frontend.
  * Esto es la esencia del patrón BFF: agregar datos de múltiples servicios.
  */
 @Service
 @RequiredArgsConstructor
-<span class="fc" id="L23">@Slf4j</span>
+<span class="fc" id="L28">@Slf4j</span>
 public class DashboardBffServiceImpl implements DashboardBffService {
 
+<span class="fc" id="L31">    private static final int MAX_PROYECTOS_RECIENTES = 5;</span>
+
     private final MsAnaliticaClient msAnaliticaClient;
+    private final MsProyectosClient msProyectosClient;
     private final MsRecursosClient  msRecursosClient;
 
     @Override
     public DashboardResponse obtenerDashboardConsolidado() {
-<span class="fc" id="L31">        log.info(&quot;BFF: construyendo dashboard consolidado&quot;);</span>
+<span class="fc" id="L39">        log.info(&quot;BFF: construyendo dashboard consolidado&quot;);</span>
 
-        // 1. Obtener datos base de analítica
-<span class="fc" id="L34">        DashboardResponse analitica = msAnaliticaClient.obtenerDashboard();</span>
+        // 1. Obtener datos base de analítica (KPIs por categoría y destacados)
+<span class="fc" id="L42">        DashboardResponse dashboard = msAnaliticaClient.obtenerDashboard();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (dashboard == null) {</span>
+<span class="fc" id="L44">            dashboard = DashboardResponse.builder().build();</span>
+        }
 
-        // 2. Enriquecer con resumen de recursos humanos
-<span class="fc" id="L37">        ResumenRecursosResponse resumenRR = null;</span>
+        // 2. Sobrescribir las cifras de proyectos con datos en vivo de ms-proyectos,
+        // para que reflejen inmediatamente cualquier alta/edición/baja de proyectos.
         try {
-<span class="fc" id="L39">            resumenRR = msRecursosClient.obtenerResumen();</span>
-<span class="fc" id="L40">        } catch (Exception ex) {</span>
-<span class="fc" id="L41">            log.warn(&quot;ms-recursos no disponible, dashboard parcial: {}&quot;, ex.getMessage());</span>
-<span class="fc" id="L42">        }</span>
-
-        // 3. Construir respuesta consolidada para el frontend (BFF pattern)
-<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (analitica == null) {</span>
-<span class="fc" id="L46">            analitica = DashboardResponse.builder().build();</span>
+<span class="fc" id="L50">            aplicarEstadisticasDeProyectos(dashboard, msProyectosClient.listarProyectos());</span>
+<span class="fc" id="L51">        } catch (Exception ex) {</span>
+<span class="fc" id="L52">            log.warn(&quot;ms-proyectos no disponible, estadísticas de proyectos no actualizadas: {}&quot;, ex.getMessage());</span>
         }
 
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (resumenRR != null) {</span>
-<span class="fc" id="L50">            analitica.setTotalEmpleados(resumenRR.getTotalEmpleados());</span>
-<span class="fc" id="L51">            analitica.setEmpleadosDisponibles(resumenRR.getEmpleadosDisponibles());</span>
-<span class="fc" id="L52">            analitica.setEmpleadosOcupados(resumenRR.getEmpleadosOcupados());</span>
-<span class="fc" id="L53">            analitica.setAsignacionesActivas(resumenRR.getAsignacionesActivas());</span>
+        // 3. Enriquecer con resumen de recursos humanos
+        try {
+<span class="fc" id="L57">            ResumenRecursosResponse resumenRR = msRecursosClient.obtenerResumen();</span>
+<span class="fc" id="L58">            dashboard.setTotalEmpleados(resumenRR.getTotalEmpleados());</span>
+<span class="fc" id="L59">            dashboard.setEmpleadosDisponibles(resumenRR.getEmpleadosDisponibles());</span>
+<span class="fc" id="L60">            dashboard.setEmpleadosOcupados(resumenRR.getEmpleadosOcupados());</span>
+<span class="fc" id="L61">            dashboard.setAsignacionesActivas(resumenRR.getAsignacionesActivas());</span>
+<span class="fc" id="L62">        } catch (Exception ex) {</span>
+<span class="fc" id="L63">            log.warn(&quot;ms-recursos no disponible, dashboard parcial: {}&quot;, ex.getMessage());</span>
         }
 
-<span class="fc" id="L56">        return analitica;</span>
+<span class="fc" id="L66">        return dashboard;</span>
     }
+
+    private void aplicarEstadisticasDeProyectos(DashboardResponse dashboard, List&lt;ProyectoResponse&gt; proyectos) {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (proyectos == null) return;</span>
+
+<span class="fc" id="L72">        Map&lt;String, Long&gt; porEstado = proyectos.stream()</span>
+<span class="fc" id="L73">                .collect(Collectors.groupingBy(ProyectoResponse::getEstado, Collectors.counting()));</span>
+
+<span class="fc" id="L75">        double promedioAvance = proyectos.stream()</span>
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">                .filter(p -&gt; &quot;EN_PROGRESO&quot;.equals(p.getEstado()) &amp;&amp; p.getAvance() != null)</span>
+<span class="fc" id="L77">                .mapToInt(ProyectoResponse::getAvance)</span>
+<span class="fc" id="L78">                .average()</span>
+<span class="fc" id="L79">                .orElse(0.0);</span>
+
+<span class="fc" id="L81">        List&lt;ProyectoResponse&gt; recientes = proyectos.stream()</span>
+<span class="fc" id="L82">                .sorted(Comparator.comparing(ProyectoResponse::getId).reversed())</span>
+<span class="fc" id="L83">                .limit(MAX_PROYECTOS_RECIENTES)</span>
+<span class="fc" id="L84">                .collect(Collectors.toList());</span>
+
+<span class="fc" id="L86">        dashboard.setTotalProyectos((long) proyectos.size());</span>
+<span class="fc" id="L87">        dashboard.setProyectosActivos(porEstado.getOrDefault(&quot;EN_PROGRESO&quot;, 0L));</span>
+<span class="fc" id="L88">        dashboard.setProyectosFinalizados(porEstado.getOrDefault(&quot;FINALIZADO&quot;, 0L));</span>
+<span class="fc" id="L89">        dashboard.setProyectosPendientes(porEstado.getOrDefault(&quot;PENDIENTE&quot;, 0L));</span>
+<span class="fc" id="L90">        dashboard.setPromedioAvance(promedioAvance);</span>
+<span class="fc" id="L91">        dashboard.setProyectosPorEstado(porEstado);</span>
+<span class="fc" id="L92">        dashboard.setProyectosRecientes(recientes);</span>
+<span class="fc" id="L93">    }</span>
 
     @Override
     public List&lt;KpiMetricaResponse&gt; listarKpis() {
-<span class="fc" id="L61">        log.info(&quot;BFF → ms-analitica: listar KPIs&quot;);</span>
-<span class="fc" id="L62">        return msAnaliticaClient.listarKpis();</span>
+<span class="fc" id="L97">        log.info(&quot;BFF → ms-analitica: listar KPIs&quot;);</span>
+<span class="fc" id="L98">        return msAnaliticaClient.listarKpis();</span>
     }
 
     @Override
     public List&lt;KpiMetricaResponse&gt; listarKpisPorCategoria(String categoria) {
-<span class="fc" id="L67">        log.info(&quot;BFF → ms-analitica: KPIs por categoría={}&quot;, categoria);</span>
-<span class="fc" id="L68">        return msAnaliticaClient.listarKpisPorCategoria(categoria);</span>
+<span class="fc" id="L103">        log.info(&quot;BFF → ms-analitica: KPIs por categoría={}&quot;, categoria);</span>
+<span class="fc" id="L104">        return msAnaliticaClient.listarKpisPorCategoria(categoria);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

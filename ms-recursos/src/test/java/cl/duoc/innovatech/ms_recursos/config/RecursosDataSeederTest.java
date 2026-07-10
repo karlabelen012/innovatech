@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.ApplicationArguments;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ class RecursosDataSeederTest {
         when(empleadoRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
         when(asignacionRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        seeder.run(new ApplicationArguments(new String[0]));
+        seeder.run();
 
         verify(empleadoRepository).saveAll(anyList());
         verify(asignacionRepository).saveAll(anyList());

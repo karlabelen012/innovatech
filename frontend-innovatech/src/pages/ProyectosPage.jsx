@@ -69,7 +69,7 @@ export default function ProyectosPage() {
       }
       closeModal(); load()
     } catch (e) {
-      push(e?.response?.data?.message || 'Error al guardar proyecto', 'error')
+      push(e?.response?.data?.error || e?.response?.data?.message || 'Error al guardar proyecto', 'error')
     } finally { setSaving(false) }
   }
 
@@ -118,7 +118,7 @@ export default function ProyectosPage() {
       }
       closeTareaModal(); loadTareas(tareasProyecto.id)
     } catch (e) {
-      push(e?.response?.data?.message || 'Error al guardar la tarea', 'error')
+      push(e?.response?.data?.error || e?.response?.data?.message || 'Error al guardar la tarea', 'error')
     } finally { setTareaSaving(false) }
   }
 

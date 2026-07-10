@@ -32,40 +32,41 @@ public class MsAnaliticaClient {
 
     private static final String DASH = &quot;/api/v1/dashboard&quot;;
     private static final String KPI  = &quot;/api/v1/kpis&quot;;
+<span class="fc" id="L35">    private static final String KPI_CATEGORIA = &quot;/api/v1/kpis/categoria/&quot;;</span>
 
     @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;obtenerDashboardFallback&quot;)
     public DashboardResponse obtenerDashboard() {
-<span class="fc" id="L38">        log.debug(&quot;GET {}{}&quot;, baseUrl, DASH);</span>
-<span class="fc" id="L39">        return restTemplate.getForObject(baseUrl + DASH, DashboardResponse.class);</span>
+<span class="fc" id="L39">        log.debug(&quot;GET {}{}&quot;, baseUrl, DASH);</span>
+<span class="fc" id="L40">        return restTemplate.getForObject(baseUrl + DASH, DashboardResponse.class);</span>
     }
 
     private DashboardResponse obtenerDashboardFallback(Throwable ex) {
-<span class="nc" id="L43">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+<span class="nc" id="L44">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
     }
 
     @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;listarKpisFallback&quot;)
     public List&lt;KpiMetricaResponse&gt; listarKpis() {
-<span class="fc" id="L48">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                baseUrl + KPI, HttpMethod.GET, null,
-<span class="fc" id="L50">                new ParameterizedTypeReference&lt;&gt;() {});</span>
-<span class="fc" id="L51">        return resp.getBody();</span>
+<span class="fc" id="L49">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
+<span class="fc" id="L50">                baseUrl + KPI, HttpMethod.GET, null,</span>
+<span class="fc" id="L51">                new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="fc" id="L52">        return resp.getBody();</span>
     }
 
     private List&lt;KpiMetricaResponse&gt; listarKpisFallback(Throwable ex) {
-<span class="nc" id="L55">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+<span class="nc" id="L56">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
     }
 
     @CircuitBreaker(name = &quot;msAnalitica&quot;, fallbackMethod = &quot;listarKpisPorCategoriaFallback&quot;)
     public List&lt;KpiMetricaResponse&gt; listarKpisPorCategoria(String categoria) {
-<span class="fc" id="L60">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                baseUrl + KPI + &quot;?categoria=&quot; + categoria,
-                HttpMethod.GET, null,
-<span class="fc" id="L63">                new ParameterizedTypeReference&lt;&gt;() {});</span>
-<span class="fc" id="L64">        return resp.getBody();</span>
+<span class="fc" id="L61">        ResponseEntity&lt;List&lt;KpiMetricaResponse&gt;&gt; resp = restTemplate.exchange(</span>
+<span class="fc" id="L62">                baseUrl + KPI_CATEGORIA + categoria,</span>
+<span class="fc" id="L63">                HttpMethod.GET, null,</span>
+<span class="fc" id="L64">                new ParameterizedTypeReference&lt;&gt;() {});</span>
+<span class="fc" id="L65">        return resp.getBody();</span>
     }
 
     private List&lt;KpiMetricaResponse&gt; listarKpisPorCategoriaFallback(String categoria, Throwable ex) {
-<span class="nc" id="L68">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
+<span class="nc" id="L69">        throw new MicroservicioNoDisponibleException(&quot;ms-analitica&quot;, ex);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

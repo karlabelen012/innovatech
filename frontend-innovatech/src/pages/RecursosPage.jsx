@@ -56,7 +56,7 @@ export default function RecursosPage() {
       if (modal === 'create') { await createEmpleado(form); push('Empleado creado', 'success') }
       else { await updateEmpleado(selected.id, form); push('Empleado actualizado', 'success') }
       setModal(null); load()
-    } catch (e) { push(e?.response?.data?.message || 'Error al guardar', 'error') }
+    } catch (e) { push(e?.response?.data?.error || e?.response?.data?.message || 'Error al guardar', 'error') }
     finally { setSaving(false) }
   }
 
@@ -74,11 +74,19 @@ export default function RecursosPage() {
 
   const handleAsignacion = async () => {
     if (!asignForm.empleadoId || !asignForm.proyectoId) { push('Selecciona empleado y proyecto', 'warning'); return }
+    const proyecto = proyectos.find(p => String(p.id) === String(asignForm.proyectoId))
     setSaving(true)
     try {
-      await createAsignacion({ empleadoId: Number(asignForm.empleadoId), proyectoId: Number(asignForm.proyectoId) })
+      await createAsignacion({
+        empleadoId: Number(asignForm.empleadoId),
+        proyectoId: Number(asignForm.proyectoId),
+        nombreProyecto: proyecto?.nombre || '',
+        fechaInicio: new Date().toISOString().slice(0, 10),
+        horasAsignadas: 10,
+        rolEnProyecto: '',
+      })
       push('Asignación creada', 'success'); setModal(null); load()
-    } catch (e) { push(e?.response?.data?.message || 'Error al crear asignación', 'error') }
+    } catch (e) { push(e?.response?.data?.error || e?.response?.data?.message || 'Error al crear asignación', 'error') }
     finally { setSaving(false) }
   }
 

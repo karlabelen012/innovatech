@@ -35,14 +35,14 @@ public class MsRecursosClient {
     private String baseUrl;
 
     private static final String EMP  = &quot;/api/v1/empleados&quot;;
-    private static final String ASIG = &quot;/api/v1/asignaciones&quot;;
+<span class="fc" id="L38">    private static final String ASIG = &quot;/api/v1/asignaciones&quot;;</span>
 
     // ── EMPLEADOS ──────────────────────────────────────────────────────────────
 
     @CircuitBreaker(name = &quot;msRecursos&quot;, fallbackMethod = &quot;listarEmpleadosFallback&quot;)
     public List&lt;EmpleadoResponse&gt; listarEmpleados() {
 <span class="fc" id="L44">        ResponseEntity&lt;List&lt;EmpleadoResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                baseUrl + EMP, HttpMethod.GET, null,
+<span class="fc" id="L45">                baseUrl + EMP, HttpMethod.GET, null,</span>
 <span class="fc" id="L46">                new ParameterizedTypeReference&lt;&gt;() {});</span>
 <span class="fc" id="L47">        return resp.getBody();</span>
     }
@@ -72,7 +72,7 @@ public class MsRecursosClient {
     public EmpleadoResponse crearEmpleado(EmpleadoRequest request) {
 <span class="fc" id="L73">        HttpEntity&lt;EmpleadoRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L74">        ResponseEntity&lt;EmpleadoResponse&gt; resp = restTemplate.postForEntity(</span>
-                baseUrl + EMP, entity, EmpleadoResponse.class);
+<span class="fc" id="L75">                baseUrl + EMP, entity, EmpleadoResponse.class);</span>
 <span class="fc" id="L76">        return resp.getBody();</span>
     }
 
@@ -85,8 +85,8 @@ public class MsRecursosClient {
         try {
 <span class="fc" id="L86">            HttpEntity&lt;EmpleadoRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L87">            ResponseEntity&lt;EmpleadoResponse&gt; resp = restTemplate.exchange(</span>
-                    baseUrl + EMP + &quot;/&quot; + id,
-                    HttpMethod.PUT, entity, EmpleadoResponse.class);
+<span class="fc" id="L88">                    baseUrl + EMP + &quot;/&quot; + id,</span>
+<span class="fc" id="L89">                    HttpMethod.PUT, entity, EmpleadoResponse.class);</span>
 <span class="fc" id="L90">            return resp.getBody();</span>
 <span class="fc" id="L91">        } catch (HttpClientErrorException.NotFound ex) {</span>
 <span class="fc" id="L92">            throw new RecursoNoEncontradoException(&quot;Empleado no encontrado: &quot; + id);</span>
@@ -104,8 +104,8 @@ public class MsRecursosClient {
     @CircuitBreaker(name = &quot;msRecursos&quot;, fallbackMethod = &quot;actualizarDisponibilidadFallback&quot;)
     public EmpleadoResponse actualizarDisponibilidad(Long id, String disponibilidad) {
 <span class="fc" id="L106">        ResponseEntity&lt;EmpleadoResponse&gt; resp = restTemplate.exchange(</span>
-                baseUrl + EMP + &quot;/&quot; + id + &quot;?disponibilidad=&quot; + disponibilidad,
-                HttpMethod.PATCH, null, EmpleadoResponse.class);
+<span class="fc" id="L107">                baseUrl + EMP + &quot;/&quot; + id + &quot;?disponibilidad=&quot; + disponibilidad,</span>
+<span class="fc" id="L108">                HttpMethod.PATCH, null, EmpleadoResponse.class);</span>
 <span class="fc" id="L109">        return resp.getBody();</span>
     }
 
@@ -119,7 +119,7 @@ public class MsRecursosClient {
 <span class="fc" id="L119">            restTemplate.delete(baseUrl + EMP + &quot;/&quot; + id);</span>
 <span class="fc" id="L120">        } catch (HttpClientErrorException.NotFound ex) {</span>
 <span class="fc" id="L121">            throw new RecursoNoEncontradoException(&quot;Empleado no encontrado: &quot; + id);</span>
-<span class="fc" id="L122">        }</span>
+        }
 <span class="fc" id="L123">    }</span>
 
     private void eliminarEmpleadoFallback(Long id, RecursoNoEncontradoException ex) {
@@ -135,7 +135,7 @@ public class MsRecursosClient {
     @CircuitBreaker(name = &quot;msRecursos&quot;, fallbackMethod = &quot;listarAsignacionesFallback&quot;)
     public List&lt;AsignacionResponse&gt; listarAsignaciones() {
 <span class="fc" id="L137">        ResponseEntity&lt;List&lt;AsignacionResponse&gt;&gt; resp = restTemplate.exchange(</span>
-                baseUrl + ASIG, HttpMethod.GET, null,
+<span class="fc" id="L138">                baseUrl + ASIG, HttpMethod.GET, null,</span>
 <span class="fc" id="L139">                new ParameterizedTypeReference&lt;&gt;() {});</span>
 <span class="fc" id="L140">        return resp.getBody();</span>
     }
@@ -148,7 +148,7 @@ public class MsRecursosClient {
     public AsignacionResponse crearAsignacion(AsignacionRequest request) {
 <span class="fc" id="L149">        HttpEntity&lt;AsignacionRequest&gt; entity = new HttpEntity&lt;&gt;(request, jsonHeaders());</span>
 <span class="fc" id="L150">        ResponseEntity&lt;AsignacionResponse&gt; resp = restTemplate.postForEntity(</span>
-                baseUrl + ASIG, entity, AsignacionResponse.class);
+<span class="fc" id="L151">                baseUrl + ASIG, entity, AsignacionResponse.class);</span>
 <span class="fc" id="L152">        return resp.getBody();</span>
     }
 
