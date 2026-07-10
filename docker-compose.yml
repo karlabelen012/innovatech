@@ -1,0 +1,94 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: innovatech-mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ms-proyectos:
+    build: ./ms-proyectos
+    container_name: innovatech-ms-proyectos
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ms_proyectos_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    ports:
+      - "8081:8081"
+
+  ms-analitica:
+    build: ./ms-analitica
+    container_name: innovatech-ms-analitica
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ms_analitica_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    ports:
+      - "8083:8083"
+
+  ms-recursos:
+    build: ./ms-recursos
+    container_name: innovatech-ms-recursos
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ms_recursos_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    ports:
+      - "8084:8084"
+
+  ms-mensajeria:
+    build: ./ms-mensajeria
+    container_name: innovatech-ms-mensajeria
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ms_mensajeria_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    ports:
+      - "8085:8085"
+
+  bff-innovatech:
+    build: ./bff-innovatech
+    container_name: innovatech-bff
+    depends_on:
+      - ms-proyectos
+      - ms-analitica
+      - ms-recursos
+      - ms-mensajeria
+    environment:
+      MS_PROYECTOS_URL: http://ms-proyectos:8081
+      MS_RECURSOS_URL: http://ms-recursos:8084
+      MS_ANALITICA_URL: http://ms-analitica:8083
+      MS_MENSAJERIA_URL: http://ms-mensajeria:8085
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend-innovatech
+    container_name: innovatech-frontend
+    depends_on:
+      - bff-innovatech
+    ports:
+      - "5173:80"
+
+volumes:
+  mysql-data:
