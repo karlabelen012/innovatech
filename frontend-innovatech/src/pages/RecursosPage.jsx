@@ -3,6 +3,8 @@ import { useOutletContext } from 'react-router-dom'
 import { getEmpleados, createEmpleado, updateEmpleado, deleteEmpleado, updateDisponibilidad, getAsignaciones, createAsignacion, deleteAsignacion, getProyectos } from '../services/api.js'
 import { Btn, Badge, Card, Modal, Input, Select, Spinner, EmptyState, Avatar } from '../atoms/index.jsx'
 import { useNotif } from '../context/NotifContext.jsx'
+import { usePolling } from '../hooks/usePolling.js'
+import { getPollInterval } from '../utils/prefs.js'
 
 const DISPONIBILIDADES = [
   { value:'DISPONIBLE', label:'Disponible' },
@@ -39,6 +41,9 @@ export default function RecursosPage() {
   }
 
   useEffect(() => { load() }, [refreshTick])
+
+  const pollMs = getPollInterval()
+  usePolling(() => load(), pollMs, pollMs > 0)
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.type==='number' ? Number(e.target.value) : e.target.value }))
 

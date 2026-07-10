@@ -40,7 +40,7 @@ public class DashboardServiceImpl implements DashboardService {
 <span class="nc" id="L40">        Map&lt;String, Double&gt; kpisPorCategoria = new HashMap&lt;&gt;();</span>
 <span class="nc bnc" id="L41" title="All 2 branches missed.">        for (Object[] fila : promediosRaw) {</span>
 <span class="nc" id="L42">            kpisPorCategoria.put(fila[0].toString(), (Double) fila[1]);</span>
-        }
+<span class="nc" id="L43">        }</span>
 
 <span class="nc" id="L45">        List&lt;ReporteProyectoDTO&gt; recientes = reporteRepository.findTop5ByOrderByFechaRegistroDesc()</span>
 <span class="nc" id="L46">                .stream().map(r -&gt; ReporteProyectoDTO.builder()</span>
